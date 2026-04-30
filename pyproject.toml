@@ -1,0 +1,30 @@
+[project]
+name = "ether-ml-fraud"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Dmitrii Kotik",email = "dmdoggx@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp (>=3.13.5,<4.0.0)",
+    "pydantic-settings (>=2.14.0,<3.0.0)",
+    "pydantic (>=2.13.3,<3.0.0)",
+    "stamina (>=26.1.0,<27.0.0)",
+    "pytest (>=9.0.3,<10.0.0)",
+    "pytest-asyncio (>=1.3.0,<2.0.0)",
+    "dishka (>=1.10.1,<2.0.0)",
+    "structlog (>=25.5.0,<26.0.0)"
+]
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
