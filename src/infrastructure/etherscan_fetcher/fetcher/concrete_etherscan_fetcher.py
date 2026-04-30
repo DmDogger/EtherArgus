@@ -1,8 +1,7 @@
 import asyncio
-from asyncio import TaskGroup, Task
-from datetime import UTC, datetime
+from asyncio import TaskGroup
 from functools import partial
-from typing import Mapping, Sequence
+from typing import Mapping, Sequence, final
 
 import structlog
 
@@ -20,7 +19,7 @@ type RawQueryFromEtherscan = Mapping[str, str | list[dict[str, str]]]
 
 log = structlog.getLogger(__name__)
 
-
+@final
 class ConcreteEtherscanFetcher:
     def __init__(self, client: HTTPClient, on_done_callback: DoneCallback):
         self._client = client

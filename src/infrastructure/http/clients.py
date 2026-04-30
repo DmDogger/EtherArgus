@@ -1,5 +1,5 @@
 import asyncio
-from typing import Mapping
+from typing import Mapping, final
 
 import stamina
 from aiohttp import ClientSession
@@ -30,7 +30,7 @@ class AioHTTPClient:
 
         return raw_data
 
-
+@final
 class EtherscanHTTPClient:
     def __init__(self, client: HTTPClient):
         self._client = client
