@@ -6,6 +6,7 @@ from typing import Mapping, Sequence
 
 import structlog
 
+from application.interfaces.done_callback import DoneCallback
 from application.interfaces.http_client import HTTPClient
 from config.etherscan import etherscan_settings
 from infrastructure.etherscan_fetcher.enums import ActionEnum, TaskStatusEnum
@@ -21,8 +22,9 @@ log = structlog.getLogger(__name__)
 
 
 class ConcreteEtherscanFetcher:
-    def __init__(self, client: HTTPClient):
+    def __init__(self, client: HTTPClient, on_done_callback: DoneCallback):
         self._client = client
+        self._on_done_callback = on_done_callback
         self._semaphore = asyncio.Semaphore(etherscan_settings.etherscan_api_call_limit)
 
     async def __call__(self, address: str) -> Sequence[RawQueryFromEtherscan]:
@@ -50,7 +52,7 @@ class ConcreteEtherscanFetcher:
                 ]
 
                 for task in tasks:
-                    task.add_done_callback(partial(self._done_cb, address=address))
+                    task.add_done_callback(partial(self._on_done_callback, address=address))
 
             return [t.result() for t in tasks]
         except* InvalidEtherscanResponseStatus as err_gr:
@@ -105,39 +107,3 @@ class ConcreteEtherscanFetcher:
         raw_data = await self._client(params=query)
         return raw_data
 
-    @staticmethod
-    def _done_cb(task: Task, address: str) -> None:
-        task_name = task.get_name()
-        coro_name = task.get_coro().__name__
-        if task.cancelled():
-            log.info(
-                "Callback called for 'cancelled' task",
-                address=address,
-                t_name=task_name,
-                c_name=coro_name,
-                status=TaskStatusEnum.CANCELLED,
-                timestamp=datetime.now(UTC),
-            )
-            return
-
-        if task.exception():
-            log.error(
-                "Callback called for task with exception",
-                address=address,
-                t_name=task_name,
-                c_name=coro_name,
-                status=TaskStatusEnum.ERROR,
-                exc=str(task.exception()),
-            )
-
-            return
-
-        if task.done():
-            log.info(
-                "Callback called for successfully task",
-                address=address,
-                t_name=task_name,
-                c_name=coro_name,
-                status=TaskStatusEnum.SUCCESS,
-                timestamp=datetime.now(UTC),
-            )

@@ -17,10 +17,14 @@ async def fetcher(client: ClientSession):
     from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
         ConcreteEtherscanFetcher,
     )
+    from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
+        EtherscanDoneCallback,
+    )
     from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
     return ConcreteEtherscanFetcher(
         EtherscanHTTPClient(AioHTTPClient(client)),
+        EtherscanDoneCallback(),
     )
 
 

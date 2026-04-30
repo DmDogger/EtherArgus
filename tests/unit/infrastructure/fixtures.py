@@ -10,6 +10,9 @@ from aiohttp import ClientSession
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
+from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
+    EtherscanDoneCallback,
+)
 from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
 
@@ -34,11 +37,18 @@ def mock_client_session(mock_http_response: AsyncMock) -> AsyncMock:
 
 
 @pytest.fixture
+def done_callback() -> EtherscanDoneCallback:
+    return EtherscanDoneCallback()
+
+
+@pytest.fixture
 def concrete_etherscan_fetcher(
     mock_client_session: AsyncMock,
+    done_callback: EtherscanDoneCallback,
 ) -> ConcreteEtherscanFetcher:
     return ConcreteEtherscanFetcher(
         EtherscanHTTPClient(AioHTTPClient(mock_client_session)),
+        done_callback,
     )
 
 
@@ -48,6 +58,7 @@ def concrete_etherscan_fetcher_class(
 ) -> ConcreteEtherscanFetcher:
     return ConcreteEtherscanFetcher(
         EtherscanHTTPClient(AioHTTPClient(mock_client_session_class)),
+        EtherscanDoneCallback(),
     )
 
 
