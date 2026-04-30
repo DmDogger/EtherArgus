@@ -3,9 +3,10 @@ from collections.abc import AsyncIterable
 from aiohttp import ClientSession
 from dishka import FromDishka, Provider, Scope, provide
 
-from infrastructure.etherscan_fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
+from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
 
 class InfrastructureProviders(Provider):
@@ -25,4 +26,6 @@ class ApplicationProviders(Provider):
         self,
         client: FromDishka[ClientSession],
     ) -> ConcreteEtherscanFetcher:
-        return ConcreteEtherscanFetcher(client)
+        return ConcreteEtherscanFetcher(
+            EtherscanHTTPClient(AioHTTPClient(client)),
+        )

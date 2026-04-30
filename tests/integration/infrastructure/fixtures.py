@@ -14,11 +14,14 @@ async def client() -> AsyncIterator[ClientSession]:
 
 @pytest_asyncio.fixture
 async def fetcher(client: ClientSession):
-    from infrastructure.etherscan_fetcher.concrete_etherscan_fetcher import (
+    from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
         ConcreteEtherscanFetcher,
     )
+    from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
-    return ConcreteEtherscanFetcher(client)
+    return ConcreteEtherscanFetcher(
+        EtherscanHTTPClient(AioHTTPClient(client)),
+    )
 
 
 @pytest.fixture

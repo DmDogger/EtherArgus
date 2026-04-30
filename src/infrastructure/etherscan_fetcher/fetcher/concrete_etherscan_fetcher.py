@@ -4,29 +4,28 @@ from datetime import UTC, datetime
 from functools import partial
 from typing import Mapping, Sequence
 
-import stamina
 import structlog
-from aiohttp import ClientSession
 
+from application.interfaces.http_client import HTTPClient
 from config.etherscan import etherscan_settings
 from infrastructure.etherscan_fetcher.enums import ActionEnum, TaskStatusEnum
-from infrastructure.etherscan_fetcher.etherscan_query_builder import (
+from infrastructure.etherscan_fetcher.fetcher.etherscan_query_builder import (
     EtherscanQueryBuilder,
     QueryDict,
 )
 from infrastructure.exceptions import InvalidEtherscanResponseStatus
 
-type RawQueryFromEtherScan = Mapping[str, str | list[dict[str, str]]]
+type RawQueryFromEtherscan = Mapping[str, str | list[dict[str, str]]]
 
 log = structlog.getLogger(__name__)
 
 
 class ConcreteEtherscanFetcher:
-    def __init__(self, client: ClientSession):
+    def __init__(self, client: HTTPClient):
         self._client = client
         self._semaphore = asyncio.Semaphore(etherscan_settings.etherscan_api_call_limit)
 
-    async def __call__(self, address: str) -> Sequence[RawQueryFromEtherScan]:
+    async def __call__(self, address: str) -> Sequence[RawQueryFromEtherscan]:
         """Fetch three Etherscan endpoints concurrently via 'TaskGroup' and a semaphore.
 
         The free-tier API only allows a handful of requests per minute (e.g. three), so the
@@ -61,7 +60,7 @@ class ConcreteEtherscanFetcher:
             log.error("HTTP Timeout error", errors=err_gr.exceptions)
             raise
 
-    async def get_transactions(self, *, address: str) -> RawQueryFromEtherScan:
+    async def get_transactions(self, *, address: str) -> RawQueryFromEtherscan:
         """Building and query by 'EtherscanQueryBuilder' and fetching normal transactions by etherscan.io API"""
         query: QueryDict = (
             EtherscanQueryBuilder()
@@ -73,10 +72,10 @@ class ConcreteEtherscanFetcher:
             .build()
         )
 
-        response = await self._make_fetch(query=query)
-        return response
+        raw_data = await self._client(params=query)
+        return raw_data
 
-    async def get_internal_transactions(self, *, address: str) -> RawQueryFromEtherScan:
+    async def get_internal_transactions(self, *, address: str) -> RawQueryFromEtherscan:
         """Building and query by 'EtherscanQueryBuilder' and fetching internal transactions by etherscan.io API"""
         query: QueryDict = (
             EtherscanQueryBuilder()
@@ -88,10 +87,10 @@ class ConcreteEtherscanFetcher:
             .build()
         )
 
-        response = await self._make_fetch(query=query)
-        return response
+        raw_data = await self._client(params=query)
+        return raw_data
 
-    async def get_token_transfers(self, *, address: str) -> RawQueryFromEtherScan:
+    async def get_token_transfers(self, *, address: str) -> RawQueryFromEtherscan:
         """Building and query by 'EtherscanQueryBuilder' and fetching token transfers by etherscan.io API"""
         query: QueryDict = (
             EtherscanQueryBuilder()
@@ -103,27 +102,9 @@ class ConcreteEtherscanFetcher:
             .build()
         )
 
-        response = await self._make_fetch(query=query)
-
-        return response
-
-    @stamina.retry(on=asyncio.TimeoutError, attempts=3)
-    async def _make_fetch(self, query: QueryDict) -> RawQueryFromEtherScan:
-        """Abstract fetching and working with JSON, if got invalid status raises an InvalidEtherscanResponseStatus with raw data"""
-        response = await self._client.get(
-            url=etherscan_settings.etherscan_url, params=query
-        )
-
-        response.raise_for_status()
-        raw_data = await response.json()
-
-        if raw_data["status"] != "1":
-            raise InvalidEtherscanResponseStatus(
-                f"Expected status to be '1', but got: {raw_data["status"]}"
-                f"Error message received from etherscan: {raw_data["message"]}"
-            )
-
+        raw_data = await self._client(params=query)
         return raw_data
+
 
     @staticmethod
     def _done_cb(task: Task, address: str) -> None:

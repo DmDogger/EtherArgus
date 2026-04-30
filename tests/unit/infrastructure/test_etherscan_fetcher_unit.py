@@ -1,6 +1,6 @@
 import pytest
 
-from infrastructure.etherscan_fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
 from infrastructure.exceptions import InvalidEtherscanResponseStatus

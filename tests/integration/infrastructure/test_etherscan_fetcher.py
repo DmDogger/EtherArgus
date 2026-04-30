@@ -1,6 +1,6 @@
 import pytest
 
-from infrastructure.etherscan_fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
 
@@ -42,4 +42,4 @@ class TestConcreteEtherscanFetcher:
     ) -> None:
         result = await fetcher(address=ethereum_address)
 
-        assert len(result) == 5
+        assert len(result) == 3

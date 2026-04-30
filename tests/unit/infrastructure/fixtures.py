@@ -7,9 +7,10 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from aiohttp import ClientSession
 
-from infrastructure.etherscan_fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
+from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
 
 @pytest.fixture
@@ -27,7 +28,6 @@ def mock_http_response(etherscan_json_ok: dict[str, Any]) -> AsyncMock:
 
 @pytest.fixture
 def mock_client_session(mock_http_response: AsyncMock) -> AsyncMock:
-    """Async mock ``ClientSession`` with ``get`` wired to ``mock_http_response``."""
     session: AsyncMock = AsyncMock(spec=ClientSession)
     session.get = AsyncMock(return_value=mock_http_response)
     return session
@@ -37,14 +37,18 @@ def mock_client_session(mock_http_response: AsyncMock) -> AsyncMock:
 def concrete_etherscan_fetcher(
     mock_client_session: AsyncMock,
 ) -> ConcreteEtherscanFetcher:
-    return ConcreteEtherscanFetcher(mock_client_session)
+    return ConcreteEtherscanFetcher(
+        EtherscanHTTPClient(AioHTTPClient(mock_client_session)),
+    )
 
 
 @pytest.fixture(scope="class")
 def concrete_etherscan_fetcher_class(
     mock_client_session_class: AsyncMock,
 ) -> ConcreteEtherscanFetcher:
-    return ConcreteEtherscanFetcher(mock_client_session_class)
+    return ConcreteEtherscanFetcher(
+        EtherscanHTTPClient(AioHTTPClient(mock_client_session_class)),
+    )
 
 
 @pytest.fixture(scope="class")
