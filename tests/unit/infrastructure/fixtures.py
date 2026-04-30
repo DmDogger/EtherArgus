@@ -74,4 +74,3 @@ def configure_mock_http_json(mock_http_response: AsyncMock):
         mock_http_response.json = AsyncMock(return_value=dict(body))
 
     return _set
-

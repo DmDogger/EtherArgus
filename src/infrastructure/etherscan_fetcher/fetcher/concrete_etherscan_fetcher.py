@@ -105,7 +105,6 @@ class ConcreteEtherscanFetcher:
         raw_data = await self._client(params=query)
         return raw_data
 
-
     @staticmethod
     def _done_cb(task: Task, address: str) -> None:
         task_name = task.get_name()

@@ -6,7 +6,9 @@ from aiohttp import ClientSession
 
 from application.interfaces.http_client import HTTPClient
 from config.etherscan import etherscan_settings
-from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import RawQueryFromEtherscan
+from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
+    RawQueryFromEtherscan,
+)
 from infrastructure.etherscan_fetcher.fetcher.etherscan_query_builder import QueryDict
 from infrastructure.exceptions import InvalidEtherscanResponseStatus
 
@@ -18,10 +20,10 @@ class AioHTTPClient:
         self._client = client
 
     @stamina.retry(on=asyncio.TimeoutError, attempts=3)
-    async def __call__[K, V](self, params: dict[K, V], url: str | None = None) -> HTTPResponse:
-        response = await self._client.get(
-            url=url if url else etherscan_settings.etherscan_url, params=params
-        )
+    async def __call__[K, V](
+        self, params: dict[K, V], url: str | None = None
+    ) -> HTTPResponse:
+        response = await self._client.get(url=url, params=params)
 
         response.raise_for_status()
         raw_data = await response.json()
@@ -33,8 +35,13 @@ class EtherscanHTTPClient:
     def __init__(self, client: HTTPClient):
         self._client = client
 
-    async def __call__(self, params: QueryDict, url: str | None = None) -> RawQueryFromEtherscan:
-        response = await self._client(url=url, params=params)
+    async def __call__(
+        self, params: QueryDict, url: str | None = None
+    ) -> RawQueryFromEtherscan:
+        response = await self._client(
+            url=url if url is not None else etherscan_settings.etherscan_url,
+            params=params,
+        )
 
         response_status = response["status"]
         response_message = response["message"]
@@ -46,7 +53,3 @@ class EtherscanHTTPClient:
             )
 
         return response
-
-
-
-
