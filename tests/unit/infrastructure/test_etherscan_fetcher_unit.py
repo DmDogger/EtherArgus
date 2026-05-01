@@ -1,5 +1,8 @@
 import pytest
 
+from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
+    RawEtherscanResponseDTO,
+)
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
@@ -8,22 +11,13 @@ from infrastructure.exceptions import InvalidEtherscanResponseStatus
 
 class TestConcreteEtherscanFetcherUnit:
     @pytest.mark.asyncio
-    async def test_fetch_tasks_returns_sequence(
+    async def test_fetch_returns_dto(
         self, concrete_etherscan_fetcher: ConcreteEtherscanFetcher
     ) -> None:
 
         result = await concrete_etherscan_fetcher(address="dummy_address")
 
-        assert isinstance(result, (list, tuple))
-
-    @pytest.mark.asyncio
-    async def test_fetch_returns_at_least_three_results_of_tasks(
-        self, concrete_etherscan_fetcher: ConcreteEtherscanFetcher
-    ) -> None:
-
-        result = await concrete_etherscan_fetcher(address="dummy_address")
-
-        assert len(result) >= 3
+        assert isinstance(result, RawEtherscanResponseDTO)
 
     @pytest.mark.asyncio
     async def test_raises_an_invalid_response_etherscan_instead_of_base_exception(

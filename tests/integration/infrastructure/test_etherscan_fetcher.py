@@ -1,8 +1,12 @@
 import pytest
 
+from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
+    RawEtherscanResponseDTO,
+)
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
+from infrastructure.etherscan_fetcher.mapper.etherscan_mapper import EtherscanMapper
 
 
 class TestConcreteEtherscanFetcher:
@@ -36,10 +40,9 @@ class TestConcreteEtherscanFetcher:
         assert isinstance(res, dict)
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Long http request")
-    async def test_fetch_all_by_taskgroup_returns_correct_counter_results(
+    async def test_fetch_all_by_taskgroup_returns_dto(
         self, ethereum_address: str, fetcher: ConcreteEtherscanFetcher
     ) -> None:
         result = await fetcher(address=ethereum_address)
 
-        assert len(result) == 3
+        assert isinstance(result, RawEtherscanResponseDTO)
