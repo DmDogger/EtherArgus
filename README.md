@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/DmDogger/EtherArgus/blob/main/docs/ether_argus_logotype.png" width="160" alt="EtherArgus logo">
+<img src="https://github.com/DmDogger/EtherArgus/blob/main/docs/etherargus_logo.png" width="160" alt="EtherArgus logo">
 
 # EtherArgus
 
