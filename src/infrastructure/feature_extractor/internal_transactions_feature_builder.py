@@ -14,7 +14,7 @@ class InternalTransactionsFeatureBuilder:
     _features: dict[FeaturesEnum, int | Decimal | float]
 
     def __init__(self, address: str, transactions: Sequence[InternalTransactionSchema]):
-        self._address = address
+        self._address = address.lower()
         self._transactions = tuple(transactions)
         self._features = {}
 
@@ -34,5 +34,4 @@ class InternalTransactionsFeatureBuilder:
 
     def build(self) -> dict[FeaturesEnum, int | Decimal | float]:
         """Returns collected internal transaction features."""
-
         return self._features

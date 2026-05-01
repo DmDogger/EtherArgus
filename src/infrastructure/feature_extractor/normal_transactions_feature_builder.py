@@ -11,11 +11,11 @@ from infrastructure.feature_extractor.enums import FeaturesEnum
 class NormalTransactionsFeatureBuilder:
     """Builds aggregate features from normal transactions."""
 
-    _features: Mapping[FeaturesEnum, int | Decimal | float]
+    _features: dict[FeaturesEnum, int | Decimal | float]
 
     def __init__(self, address: str, transactions: Sequence[NormalTransactionSchema]):
         self._transactions = set(filter(lambda tx: tx.is_error == 0, transactions))
-        self._address = address
+        self._address = address.lower()
         self._received = set(
             tx for tx in self._transactions if self._address == tx.to_address
         )
@@ -34,14 +34,14 @@ class NormalTransactionsFeatureBuilder:
     def min_value_send(self) -> Self:
         """Adds the minimum sent transaction value."""
 
-        smallest_sent = min([Decimal(tx.value) for tx in self._sent])
+        smallest_sent = min([Decimal(tx.value) for tx in self._sent], default=Decimal("0"))
         self._features[FeaturesEnum.MIN_VALUE_SENT] = smallest_sent
         return self
 
     def max_value_send(self) -> Self:
         """Adds the maximum sent transaction value."""
 
-        largest_sent = max([Decimal(tx.value) for tx in self._sent])
+        largest_sent = max([Decimal(tx.value) for tx in self._sent], default=Decimal("0"))
         self._features[FeaturesEnum.MAX_VALUE_SENT] = largest_sent
         return self
 
@@ -55,32 +55,37 @@ class NormalTransactionsFeatureBuilder:
     def min_value_recv(self) -> Self:
         """Adds the minimum received transaction value."""
 
-        smallest_received = min([Decimal(tx.value) for tx in self._received])
+        smallest_received = min([Decimal(tx.value) for tx in self._received], default=Decimal("0"))
         self._features[FeaturesEnum.MIN_VALUE_REC] = smallest_received
         return self
 
     def max_value_recv(self) -> Self:
         """Adds the maximum received transaction value."""
 
-        largest_received = max([Decimal(tx.value) for tx in self._received])
+        largest_received = max([Decimal(tx.value) for tx in self._received], default=Decimal("0"))
         self._features[FeaturesEnum.MAX_VALUE_REC] = largest_received
         return self
 
     def avg_sent(self) -> Self:
         """Adds the average sent transaction value."""
 
-        sent_sum = sum([Decimal(tx.value) for tx in self._sent])
-        sent_count = len([tx.value for tx in self._sent])
-        average_sent_value = sent_sum / sent_count
+        try:
+            sent_sum = sum([Decimal(tx.value) for tx in self._sent])
+            sent_count = len([tx.value for tx in self._sent])
+            average_sent_value = sent_sum / sent_count
+        except ZeroDivisionError:
+            average_sent_value = Decimal("0")
         self._features[FeaturesEnum.AVG_SENT] = average_sent_value
         return self
 
     def avg_recv(self) -> Self:
         """Adds the average received transaction value."""
-
-        recv_sum = sum([Decimal(tx.value) for tx in self._received])
-        recv_count = len([tx.value for tx in self._received])
-        average_recv_value = recv_sum / recv_count
+        try:
+            recv_sum = sum([Decimal(tx.value) for tx in self._received])
+            recv_count = len([tx.value for tx in self._received])
+            average_recv_value = recv_sum / recv_count
+        except ZeroDivisionError:
+            average_recv_value = Decimal("0")
         self._features[FeaturesEnum.AVG_REC] = average_recv_value
         return self
 
@@ -102,23 +107,25 @@ class NormalTransactionsFeatureBuilder:
         """Adds minutes between first and last transactions."""
 
         timestamps = [tx.timestamp for tx in self._transactions]
-        newest_timestamp, oldest_timestamp = max(timestamps), min(timestamps)
-        delta_minutes = (newest_timestamp - oldest_timestamp) / 60
+        if len(timestamps) < 2:
+            delta_minutes = 0.0
+        else:
+            newest_timestamp, oldest_timestamp = max(timestamps), min(timestamps)
+            delta_minutes = (newest_timestamp - oldest_timestamp) / 60
         self._features[FeaturesEnum.TIME_DIFF_FIRST_LAST] = delta_minutes
         return self
 
     def avg_min_between_sent_tnx(self) -> Self:
         """Adds average minutes between sent transactions."""
 
-        timestamps = sorted([tx.timestamp for tx in self._sent])
-        later_timestamps = timestamps[1:]
-
+        timestamps = sorted(tx.timestamp for tx in self._sent)
         deltas_minutes = [
-            (earlier_ts - later_ts) / 60
-            for earlier_ts, later_ts in zip(timestamps, later_timestamps)
+            (later - earlier) / 60
+            for earlier, later in zip(timestamps, timestamps[1:])
         ]
-
-        average_delta_minutes = sum(deltas_minutes) / len(deltas_minutes)
+        average_delta_minutes = (
+            sum(deltas_minutes) / len(deltas_minutes) if deltas_minutes else 0.0
+        )
 
         self._features[FeaturesEnum.AVG_TIME_BETWEEN_SENT] = average_delta_minutes
 
@@ -155,13 +162,14 @@ class NormalTransactionsFeatureBuilder:
     def avg_min_between_received_tnx(self) -> Self:
         """Adds average minutes between received transactions."""
 
-        timestamps = sorted([tx.timestamp for tx in self._received])
-        later_timestamps = timestamps[1:]
+        timestamps = sorted(tx.timestamp for tx in self._received)
         deltas_minutes = [
             (later - earlier) / 60
-            for earlier, later in zip(timestamps, later_timestamps)
+            for earlier, later in zip(timestamps, timestamps[1:])
         ]
-        average_delta_minutes = sum(deltas_minutes) / len(deltas_minutes)
+        average_delta_minutes = (
+            sum(deltas_minutes) / len(deltas_minutes) if deltas_minutes else 0.0
+        )
         self._features[FeaturesEnum.AVG_TIME_BETWEEN_RECEIVED] = average_delta_minutes
         return self
 

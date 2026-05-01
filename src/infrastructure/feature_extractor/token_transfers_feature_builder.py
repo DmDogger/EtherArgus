@@ -14,17 +14,17 @@ class TokenTransfersFeatureBuilder:
     _features: dict[FeaturesEnum, int | Decimal | float]
 
     def __init__(self, address: str, transfers: Sequence[TokenTransfersSchema]):
-        self._address = address
+        self._address = address.lower()
         self._transfers = tuple(transfers)
         self._sent = tuple(
             (tx, self._scaled_amount(tx))
             for tx in transfers
-            if tx.from_address == address
+            if tx.from_address == self._address
         )
         self._received = tuple(
             (tx, self._scaled_amount(tx))
             for tx in transfers
-            if tx.to_address == address
+            if tx.to_address == self._address
         )
         self._features = {}
 
@@ -78,14 +78,14 @@ class TokenTransfersFeatureBuilder:
     def erc20_min_val_sent(self) -> Self:
         """Adds the minimum sent token amount."""
 
-        smallest_sent = min(amt for _, amt in self._sent)
+        smallest_sent = min((amt for _, amt in self._sent), default=Decimal("0"))
         self._features[FeaturesEnum.ERC20_MIN_VAL_SENT] = smallest_sent
         return self
 
     def erc20_max_val_sent(self) -> Self:
         """Adds the maximum sent token amount."""
 
-        largest_sent = max(amt for _, amt in self._sent)
+        largest_sent = max((amt for _, amt in self._sent), default=Decimal("0"))
         self._features[FeaturesEnum.ERC20_MAX_VAL_SENT] = largest_sent
         return self
 
@@ -93,21 +93,29 @@ class TokenTransfersFeatureBuilder:
         """Adds the average sent token amount."""
 
         amounts = [amt for _, amt in self._sent]
-        average_sent = sum(amounts) / len(amounts)
+        average_sent = (
+            sum(amounts) / len(amounts) if amounts else Decimal("0")
+        )
         self._features[FeaturesEnum.ERC20_AVG_VAL_SENT] = average_sent
         return self
 
     def erc20_min_val_rec(self) -> Self:
         """Adds the minimum received token amount."""
 
-        smallest_received = min(amt for _, amt in self._received)
+        smallest_received = min(
+            (amt for _, amt in self._received),
+            default=Decimal("0"),
+        )
         self._features[FeaturesEnum.ERC20_MIN_VAL_REC] = smallest_received
         return self
 
     def erc20_max_val_rec(self) -> Self:
         """Adds the maximum received token amount."""
 
-        largest_received = max(amt for _, amt in self._received)
+        largest_received = max(
+            (amt for _, amt in self._received),
+            default=Decimal("0"),
+        )
         self._features[FeaturesEnum.ERC20_MAX_VAL_REC] = largest_received
         return self
 
@@ -115,7 +123,9 @@ class TokenTransfersFeatureBuilder:
         """Adds the average received token amount."""
 
         amounts = [amt for _, amt in self._received]
-        average_received = sum(amounts) / len(amounts)
+        average_received = (
+            sum(amounts) / len(amounts) if amounts else Decimal("0")
+        )
         self._features[FeaturesEnum.ERC20_AVG_VAL_REC] = average_received
         return self
 

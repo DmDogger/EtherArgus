@@ -1,5 +1,11 @@
+from collections.abc import Sequence
 from decimal import Decimal
 
+from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
+    InternalTransactionSchema,
+    NormalTransactionSchema,
+    TokenTransfersSchema,
+)
 from infrastructure.feature_extractor.enums import FeaturesEnum
 from infrastructure.feature_extractor.internal_transactions_feature_builder import (
     InternalTransactionsFeatureBuilder,
@@ -19,13 +25,20 @@ class DirectorOfFeatureExtraction:
 
     def __init__(
         self,
-        normal_builder: NormalTransactionsFeatureBuilder,
-        internal_builder: InternalTransactionsFeatureBuilder,
-        token_builder: TokenTransfersFeatureBuilder,
+        address: str,
+        normal_transactions: Sequence[NormalTransactionSchema],
+        internal_transactions: Sequence[InternalTransactionSchema],
+        token_transfers: Sequence[TokenTransfersSchema],
     ):
-        self._normal_builder = normal_builder
-        self._internal_builder = internal_builder
-        self._token_builder = token_builder
+        self._normal_builder = NormalTransactionsFeatureBuilder(
+            address,
+            normal_transactions,
+        )
+        self._internal_builder = InternalTransactionsFeatureBuilder(
+            address,
+            internal_transactions,
+        )
+        self._token_builder = TokenTransfersFeatureBuilder(address, token_transfers)
 
     def __call__(self) -> BuiltFeatures:
         """Builds and merges aggregate features from all transaction groups."""

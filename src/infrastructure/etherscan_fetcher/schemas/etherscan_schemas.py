@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing_extensions import Literal
 
 
@@ -19,6 +19,13 @@ class _BaseFieldsMixin(BaseModel):
     )
     is_error: int = Field(..., alias="isError", examples=["1", "0"])
     timestamp: int = Field(..., alias="timeStamp")
+
+    @field_validator("to_address", "from_address", mode="before")
+    @classmethod
+    def _normalize_hex_address(cls, value: object) -> str:
+        if not isinstance(value, str):
+            return str(value)
+        return value.lower()
 
 
 class NormalTransactionSchema(_BaseFieldsMixin, _ConfigurationMixin):
@@ -45,3 +52,10 @@ class TokenTransfersSchema(_BaseFieldsMixin, _ConfigurationMixin):
     token_name: str = Field(..., alias="tokenName")
     token_decimal: int = Field(..., alias="tokenDecimal")
     is_error: int = Field(default=0, alias="isError")
+
+    @field_validator("contract_address", mode="before")
+    @classmethod
+    def _normalize_contract_address(cls, value: object) -> str:
+        if not isinstance(value, str):
+            return str(value)
+        return value.lower()
