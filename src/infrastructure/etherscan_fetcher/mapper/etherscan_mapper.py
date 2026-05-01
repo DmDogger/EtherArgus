@@ -19,20 +19,20 @@ class EtherscanMapper:
     def from_raw_normal_transactions(
         self, raw: RawEtherscanResponseDTO
     ) -> list[NormalTransactionSchema]:
-        transactions_to_be_mapped = raw.normal_transactions["result"]
-        return self._parse(NormalTransactionSchema, transactions_to_be_mapped)
+        result_records = raw.normal_transactions["result"]
+        return self._parse(NormalTransactionSchema, result_records)
 
     def from_raw_internal_transactions(
         self, raw: RawEtherscanResponseDTO
     ) -> list[InternalTransactionSchema]:
-        transactions_to_be_mapped = raw.internal_transactions["result"]
-        return self._parse(InternalTransactionSchema, transactions_to_be_mapped)
+        result_records = raw.internal_transactions["result"]
+        return self._parse(InternalTransactionSchema, result_records)
 
     def from_raw_token_transfers(
         self, raw: RawEtherscanResponseDTO
     ) -> list[TokenTransfersSchema]:
-        transactions_to_be_mapped = raw.token_transfers["result"]
-        return self._parse(TokenTransfersSchema, transactions_to_be_mapped)
+        result_records = raw.token_transfers["result"]
+        return self._parse(TokenTransfersSchema, result_records)
 
     @staticmethod
     def _parse(

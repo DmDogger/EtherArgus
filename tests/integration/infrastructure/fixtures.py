@@ -6,14 +6,16 @@ from aiohttp import ClientSession, TCPConnector
 
 
 @pytest_asyncio.fixture
-async def client() -> AsyncIterator[ClientSession]:
+async def aiohttp_client_session() -> AsyncIterator[ClientSession]:
     connector = TCPConnector(ssl=False)
     async with ClientSession(connector=connector) as session:
         yield session
 
 
 @pytest_asyncio.fixture
-async def fetcher(client: ClientSession):
+async def etherscan_fetcher(
+    aiohttp_client_session: ClientSession,
+):
     from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
         ConcreteEtherscanFetcher,
     )
@@ -23,11 +25,11 @@ async def fetcher(client: ClientSession):
     from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
     return ConcreteEtherscanFetcher(
-        EtherscanHTTPClient(AioHTTPClient(client)),
+        EtherscanHTTPClient(AioHTTPClient(aiohttp_client_session)),
         EtherscanDoneCallback(),
     )
 
 
 @pytest.fixture
 def ethereum_address() -> str:
-    return f"0xdadB0d80178819F2319190D340ce9A924f783711"
+    return "0xdadB0d80178819F2319190D340ce9A924f783711"

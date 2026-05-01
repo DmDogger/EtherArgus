@@ -5,7 +5,9 @@ from typing_extensions import Literal
 
 
 class _ConfigurationMixin(BaseModel):
-    model_config = ConfigDict(populate_by_name=True, extra="ignore", strict=False)
+    model_config = ConfigDict(
+        populate_by_name=True, extra="ignore", strict=False, frozen=True
+    )
 
 
 class _BaseFieldsMixin(BaseModel):
@@ -20,7 +22,7 @@ class _BaseFieldsMixin(BaseModel):
 
 
 class NormalTransactionSchema(_BaseFieldsMixin, _ConfigurationMixin):
-    value: str = Field(..., examples=["0", "583713"])
+    value: str = Field(..., alias="value", examples=["0", "583713"])
 
 
 class InternalTransactionSchema(_BaseFieldsMixin, _ConfigurationMixin):

@@ -39,7 +39,7 @@ class EtherscanDoneCallback:
 
         if task.done():
             log.info(
-                "Callback called for successfully task",
+                "Callback called for successful task",
                 address=address,
                 t_name=task_name,
                 c_name=coro_name,
