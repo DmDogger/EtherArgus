@@ -15,12 +15,20 @@ from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
     EtherscanDoneCallback,
 )
 from infrastructure.feature_extractor.enums import FeaturesEnum
+from infrastructure.feature_extractor.internal_transactions_feature_builder import (
+    InternalTransactionsFeatureBuilder,
+)
 from infrastructure.feature_extractor.normal_transactions_feature_builder import (
     NormalTransactionsFeatureBuilder,
 )
+from infrastructure.feature_extractor.token_transfers_feature_builder import (
+    TokenTransfersFeatureBuilder,
+)
 from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
+    InternalTransactionSchema,
     NormalTransactionSchema,
+    TokenTransfersSchema,
 )
 
 
@@ -139,9 +147,7 @@ def sequence_of_normal_transactions(
             "timeStamp": "1695129800",
         },
     ]
-    return [
-        NormalTransactionSchema.model_validate(row) for row in raw_transactions
-    ]
+    return [NormalTransactionSchema.model_validate(row) for row in raw_transactions]
 
 
 @pytest.fixture
@@ -174,3 +180,134 @@ def build_normal_features(
     )
 
 
+@pytest.fixture
+def sequence_of_internal_transactions(
+    ethereum_address: str,
+) -> tuple[InternalTransactionSchema, ...]:
+    counterparty = "0x1000000000000000000000000000000000000001"
+    raw_transactions = (
+        {
+            "from": ethereum_address,
+            "to": counterparty,
+            "value": "1000000000000000000",
+            "isError": "0",
+            "timeStamp": "1695123400",
+            "type": "create",
+        },
+        {
+            "from": ethereum_address,
+            "to": counterparty,
+            "value": "2000000000000000000",
+            "isError": "0",
+            "timeStamp": "1695124000",
+            "type": "create",
+        },
+        {
+            "from": counterparty,
+            "to": ethereum_address,
+            "value": "700000000000000000",
+            "isError": "0",
+            "timeStamp": "1695125000",
+            "type": "call",
+        },
+    )
+    return tuple(
+        InternalTransactionSchema.model_validate(row) for row in raw_transactions
+    )
+
+
+@pytest.fixture
+def build_internal_features(
+    ethereum_address: str,
+    sequence_of_internal_transactions: tuple[InternalTransactionSchema, ...],
+) -> Mapping[FeaturesEnum, int | float | Decimal]:
+    return (
+        InternalTransactionsFeatureBuilder(
+            address=ethereum_address,
+            transactions=sequence_of_internal_transactions,
+        )
+        .number_of_created_contracts()
+        .total_ether_sent_contracts()
+        .build()
+    )
+
+
+@pytest.fixture
+def sequence_of_token_transfers(
+    ethereum_address: str,
+) -> tuple[TokenTransfersSchema, ...]:
+    counterparty_a = "0x2000000000000000000000000000000000000002"
+    counterparty_b = "0x3000000000000000000000000000000000000003"
+    contract_a = "0x4000000000000000000000000000000000000004"
+    contract_b = "0x5000000000000000000000000000000000000005"
+    raw_transfers = (
+        {
+            "from": ethereum_address,
+            "to": counterparty_a,
+            "value": "1000000000000000000",
+            "tokenDecimal": "18",
+            "contractAddress": contract_a,
+            "tokenName": "Alpha",
+            "isError": "0",
+            "timeStamp": "1695123400",
+        },
+        {
+            "from": ethereum_address,
+            "to": counterparty_b,
+            "value": "2000000000000000000",
+            "tokenDecimal": "18",
+            "contractAddress": contract_b,
+            "tokenName": "Beta",
+            "isError": "0",
+            "timeStamp": "1695124000",
+        },
+        {
+            "from": counterparty_a,
+            "to": ethereum_address,
+            "value": "1000000",
+            "tokenDecimal": "6",
+            "contractAddress": contract_a,
+            "tokenName": "Alpha",
+            "isError": "0",
+            "timeStamp": "1695125000",
+        },
+        {
+            "from": counterparty_b,
+            "to": ethereum_address,
+            "value": "3000000",
+            "tokenDecimal": "6",
+            "contractAddress": contract_b,
+            "tokenName": "Gamma",
+            "isError": "0",
+            "timeStamp": "1695126000",
+        },
+    )
+    return tuple(TokenTransfersSchema.model_validate(row) for row in raw_transfers)
+
+
+@pytest.fixture
+def build_token_transfer_features(
+    ethereum_address: str,
+    sequence_of_token_transfers: tuple[TokenTransfersSchema, ...],
+) -> Mapping[FeaturesEnum, int | float | Decimal]:
+    return (
+        TokenTransfersFeatureBuilder(
+            address=ethereum_address,
+            transfers=sequence_of_token_transfers,
+        )
+        .total_erc20_tnx()
+        .erc20_total_ether_sent()
+        .erc20_total_ether_received()
+        .erc20_uniq_sent_addr()
+        .erc20_uniq_rec_addr()
+        .erc20_uniq_rec_contract_addr()
+        .erc20_min_val_sent()
+        .erc20_max_val_sent()
+        .erc20_avg_val_sent()
+        .erc20_min_val_rec()
+        .erc20_max_val_rec()
+        .erc20_avg_val_rec()
+        .erc20_uniq_sent_token_name()
+        .erc20_uniq_rec_token_name()
+        .build()
+    )

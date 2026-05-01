@@ -6,6 +6,8 @@ from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
+
+
 class TestConcreteEtherscanFetcher:
     @pytest.mark.asyncio
     @pytest.mark.skip(reason="Long http request")
