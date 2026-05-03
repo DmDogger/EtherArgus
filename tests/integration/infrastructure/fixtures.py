@@ -16,16 +16,16 @@ from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
     NormalTransactionSchema,
     TokenTransfersSchema,
 )
-from infrastructure.feature_extractor.director_of_feature_extraction import (
+from infrastructure.feature_extraction.director_of_feature_extraction import (
     DirectorOfFeatureExtraction,
 )
-from infrastructure.feature_extractor.internal_transactions_feature_builder import (
+from infrastructure.feature_extraction.internal_transactions_feature_builder import (
     InternalTransactionsFeatureBuilder,
 )
-from infrastructure.feature_extractor.normal_transactions_feature_builder import (
+from infrastructure.feature_extraction.normal_transactions_feature_builder import (
     NormalTransactionsFeatureBuilder,
 )
-from infrastructure.feature_extractor.token_transfers_feature_builder import (
+from infrastructure.feature_extraction.token_transfers_feature_builder import (
     TokenTransfersFeatureBuilder,
 )
 from infrastructure.ml import ConcreteModelLoader, ConcreteAsyncExecutor

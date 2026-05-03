@@ -1,7 +1,7 @@
 import pytest
 
 from domain.value_objects.risk_score_vo import RiskScoreValueObject
-from infrastructure.feature_extractor.director_of_feature_extraction import (
+from infrastructure.feature_extraction.director_of_feature_extraction import (
     DirectorOfFeatureExtraction,
 )
 from infrastructure.ml.fraud_score_classifier import ConcreteFraudScoreClassifier

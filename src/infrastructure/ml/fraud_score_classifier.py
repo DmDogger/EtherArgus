@@ -6,7 +6,7 @@ from application.interfaces.ml_components import (
     MlScaler,
 )
 from domain.value_objects.risk_score_vo import RiskScoreValueObject
-from infrastructure.feature_extractor.director_of_feature_extraction import (
+from infrastructure.feature_extraction.director_of_feature_extraction import (
     BuiltFeatures,
 )
 from infrastructure.utils import from_raw_dict_to_dataframe

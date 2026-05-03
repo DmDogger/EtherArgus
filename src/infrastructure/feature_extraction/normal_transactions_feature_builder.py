@@ -5,7 +5,7 @@ from typing import Self
 from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
     NormalTransactionSchema,
 )
-from infrastructure.feature_extractor.enums import FeaturesEnum
+from infrastructure.feature_extraction.enums import FeaturesEnum
 
 
 class NormalTransactionsFeatureBuilder:

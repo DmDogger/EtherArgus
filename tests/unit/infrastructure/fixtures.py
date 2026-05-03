@@ -14,14 +14,14 @@ from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import 
 from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
     EtherscanDoneCallback,
 )
-from infrastructure.feature_extractor.enums import FeaturesEnum
-from infrastructure.feature_extractor.internal_transactions_feature_builder import (
+from infrastructure.feature_extraction.enums import FeaturesEnum
+from infrastructure.feature_extraction.internal_transactions_feature_builder import (
     InternalTransactionsFeatureBuilder,
 )
-from infrastructure.feature_extractor.normal_transactions_feature_builder import (
+from infrastructure.feature_extraction.normal_transactions_feature_builder import (
     NormalTransactionsFeatureBuilder,
 )
-from infrastructure.feature_extractor.token_transfers_feature_builder import (
+from infrastructure.feature_extraction.token_transfers_feature_builder import (
     TokenTransfersFeatureBuilder,
 )
 from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient

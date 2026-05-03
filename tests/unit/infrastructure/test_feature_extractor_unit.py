@@ -3,7 +3,7 @@ from typing import Mapping
 
 import pytest
 
-from infrastructure.feature_extractor.enums import FeaturesEnum
+from infrastructure.feature_extraction.enums import FeaturesEnum
 
 type FeatureValue = int | float | Decimal
 

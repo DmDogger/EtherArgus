@@ -1,6 +1,6 @@
 import pytest
 
-from infrastructure.feature_extractor.director_of_feature_extraction import (
+from infrastructure.feature_extraction.director_of_feature_extraction import (
     DirectorOfFeatureExtraction,
 )
 
