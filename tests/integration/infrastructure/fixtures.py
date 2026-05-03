@@ -27,9 +27,7 @@ from infrastructure.feature_extractor.token_transfers_feature_builder import (
 )
 
 
-_DEFAULT_ETHEREUM_ADDRESS = (
-    "0xdadB0d80178819F2319190D340ce9A924f783711"
-)
+_DEFAULT_ETHEREUM_ADDRESS = "0xdadB0d80178819F2319190D340ce9A924f783711"
 
 
 @pytest.fixture

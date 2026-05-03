@@ -93,9 +93,7 @@ class TokenTransfersFeatureBuilder:
         """Adds the average sent token amount."""
 
         amounts = [amt for _, amt in self._sent]
-        average_sent = (
-            sum(amounts) / len(amounts) if amounts else Decimal("0")
-        )
+        average_sent = sum(amounts) / len(amounts) if amounts else Decimal("0")
         self._features[FeaturesEnum.ERC20_AVG_VAL_SENT] = average_sent
         return self
 
@@ -123,9 +121,7 @@ class TokenTransfersFeatureBuilder:
         """Adds the average received token amount."""
 
         amounts = [amt for _, amt in self._received]
-        average_received = (
-            sum(amounts) / len(amounts) if amounts else Decimal("0")
-        )
+        average_received = sum(amounts) / len(amounts) if amounts else Decimal("0")
         self._features[FeaturesEnum.ERC20_AVG_VAL_REC] = average_received
         return self
 

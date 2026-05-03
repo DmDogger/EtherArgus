@@ -34,14 +34,18 @@ class NormalTransactionsFeatureBuilder:
     def min_value_send(self) -> Self:
         """Adds the minimum sent transaction value."""
 
-        smallest_sent = min([Decimal(tx.value) for tx in self._sent], default=Decimal("0"))
+        smallest_sent = min(
+            [Decimal(tx.value) for tx in self._sent], default=Decimal("0")
+        )
         self._features[FeaturesEnum.MIN_VALUE_SENT] = smallest_sent
         return self
 
     def max_value_send(self) -> Self:
         """Adds the maximum sent transaction value."""
 
-        largest_sent = max([Decimal(tx.value) for tx in self._sent], default=Decimal("0"))
+        largest_sent = max(
+            [Decimal(tx.value) for tx in self._sent], default=Decimal("0")
+        )
         self._features[FeaturesEnum.MAX_VALUE_SENT] = largest_sent
         return self
 
@@ -55,14 +59,18 @@ class NormalTransactionsFeatureBuilder:
     def min_value_recv(self) -> Self:
         """Adds the minimum received transaction value."""
 
-        smallest_received = min([Decimal(tx.value) for tx in self._received], default=Decimal("0"))
+        smallest_received = min(
+            [Decimal(tx.value) for tx in self._received], default=Decimal("0")
+        )
         self._features[FeaturesEnum.MIN_VALUE_REC] = smallest_received
         return self
 
     def max_value_recv(self) -> Self:
         """Adds the maximum received transaction value."""
 
-        largest_received = max([Decimal(tx.value) for tx in self._received], default=Decimal("0"))
+        largest_received = max(
+            [Decimal(tx.value) for tx in self._received], default=Decimal("0")
+        )
         self._features[FeaturesEnum.MAX_VALUE_REC] = largest_received
         return self
 
@@ -120,8 +128,7 @@ class NormalTransactionsFeatureBuilder:
 
         timestamps = sorted(tx.timestamp for tx in self._sent)
         deltas_minutes = [
-            (later - earlier) / 60
-            for earlier, later in zip(timestamps, timestamps[1:])
+            (later - earlier) / 60 for earlier, later in zip(timestamps, timestamps[1:])
         ]
         average_delta_minutes = (
             sum(deltas_minutes) / len(deltas_minutes) if deltas_minutes else 0.0
@@ -164,8 +171,7 @@ class NormalTransactionsFeatureBuilder:
 
         timestamps = sorted(tx.timestamp for tx in self._received)
         deltas_minutes = [
-            (later - earlier) / 60
-            for earlier, later in zip(timestamps, timestamps[1:])
+            (later - earlier) / 60 for earlier, later in zip(timestamps, timestamps[1:])
         ]
         average_delta_minutes = (
             sum(deltas_minutes) / len(deltas_minutes) if deltas_minutes else 0.0
