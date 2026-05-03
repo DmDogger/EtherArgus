@@ -1,9 +1,12 @@
 from collections.abc import AsyncIterator, Sequence
+from pathlib import Path
+from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
 from aiohttp import ClientSession, TCPConnector
 
+from application.interfaces.model_loader import ModelLoader
 from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
     RawEtherscanResponseDTO,
 )
@@ -25,7 +28,13 @@ from infrastructure.feature_extractor.normal_transactions_feature_builder import
 from infrastructure.feature_extractor.token_transfers_feature_builder import (
     TokenTransfersFeatureBuilder,
 )
-
+from infrastructure.ml import ConcreteModelLoader, ConcreteAsyncExecutor
+from infrastructure.ml.fraud_score_classifier import ConcreteFraudScoreClassifier
+from infrastructure.ml.ml_components import (
+    ConcreteMlClassificationModel,
+    ConcreteMlScaler,
+    ConcreteMlInputer,
+)
 
 _DEFAULT_ETHEREUM_ADDRESS = "0xdadB0d80178819F2319190D340ce9A924f783711"
 
@@ -154,4 +163,44 @@ async def director_of_feature_builder(
         transactions,
         internal_transactions,
         token_transfers,
+    )
+
+
+@pytest_asyncio.fixture
+async def model_loader_obj() -> AsyncGenerator[ModelLoader]:
+    yield ConcreteModelLoader(async_executor=ConcreteAsyncExecutor())
+
+
+@pytest_asyncio.fixture
+async def ml_imputer(model_loader_obj):
+    ml_artifacts = await model_loader_obj.load()
+    return ConcreteMlInputer(ml_artifacts=ml_artifacts)
+
+
+@pytest_asyncio.fixture
+async def ml_model(model_loader_obj):
+    ml_artifacts = await model_loader_obj.load()
+    return ConcreteMlClassificationModel(
+        ml_artifacts=ml_artifacts,
+    )
+
+
+@pytest_asyncio.fixture
+async def ml_scaler(model_loader_obj):
+    ml_artifacts = await model_loader_obj.load()
+    return ConcreteMlScaler(
+        ml_artifacts=ml_artifacts,
+    )
+
+
+@pytest_asyncio.fixture
+async def fraud_score_classifier(
+    ml_model: ConcreteMlClassificationModel,
+    ml_imputer: ConcreteMlInputer,
+    ml_scaler: ConcreteMlScaler,
+) -> ConcreteFraudScoreClassifier:
+    return ConcreteFraudScoreClassifier(
+        model=ml_model,
+        imputer=ml_imputer,
+        scaler=ml_scaler,
     )

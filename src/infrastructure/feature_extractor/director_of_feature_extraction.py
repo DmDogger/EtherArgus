@@ -71,8 +71,6 @@ class DirectorOfFeatureExtraction:
             .avg_min_between_sent_tnx()
             .sent_tnx()
             .received_tnx()
-            .unique_sent_to_addresses()
-            .unique_received_from_addresses()
             .avg_min_between_received_tnx()
             .build()
         )

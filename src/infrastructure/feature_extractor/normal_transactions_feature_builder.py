@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from decimal import Decimal
-from typing import Self, Mapping
+from typing import Self
 
 from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
     NormalTransactionSchema,
@@ -153,7 +153,7 @@ class NormalTransactionsFeatureBuilder:
     def unique_sent_to_addresses(self) -> Self:
         """Adds the number of unique sent-to addresses."""
 
-        self._features[FeaturesEnum.UNIQUE_SENT_TO_ADDRESSES] = len(
+        self._features[FeaturesEnum.UNIQUE_SENT] = len(
             {tx.to_address for tx in self._sent}
         )
         return self
@@ -161,7 +161,7 @@ class NormalTransactionsFeatureBuilder:
     def unique_received_from_addresses(self) -> Self:
         """Adds the number of unique received-from addresses."""
 
-        self._features[FeaturesEnum.UNIQUE_RECEIVED_FROM_ADDRESSES] = len(
+        self._features[FeaturesEnum.UNIQUE_RECV] = len(
             {tx.from_address for tx in self._received}
         )
         return self
