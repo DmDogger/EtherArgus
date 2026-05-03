@@ -38,6 +38,6 @@ class AnalysisResult(AbstractAggregateRoot):
         analysis_result._register_event(
             event_class=event_class,
             requested_to=analysis_result.address,
-            correlation_id=CorrelationId,
+            correlation_id=CorrelationId.create(),
         )
         return analysis_result
