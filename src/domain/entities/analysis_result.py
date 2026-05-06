@@ -1,6 +1,7 @@
 from datetime import datetime, UTC
 from dataclasses import dataclass, field
-from typing import final, TypeVar, Literal
+from decimal import Decimal
+from typing import final, TypeVar
 
 from domain.entities.base import AbstractAggregateRoot
 from domain.events.base import DomainEvent
@@ -26,13 +27,12 @@ class AnalysisResult(AbstractAggregateRoot):
         *,
         event_class: type[T],
         address: str,
-        score: float,
-        level: Literal["low", "medium", "high"],
+        score: RiskScoreValueObject,
     ) -> "AnalysisResult":
         analysis_result = cls(
             address=EthereumAddressValueObject.create(address=address),
-            score=RiskScoreValueObject.create(score=score),
-            level=RiskLevelValueObject.set(level=level),
+            score=score,
+            level=RiskLevelValueObject.set(risk=score.value),
             processed_at=datetime.now(UTC),
         )
         analysis_result._register_event(

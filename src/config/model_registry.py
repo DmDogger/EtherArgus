@@ -19,4 +19,5 @@ class ModelRegistrySettings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+
 model_registry_settings = ModelRegistrySettings()

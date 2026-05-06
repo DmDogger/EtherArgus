@@ -2,9 +2,7 @@ from collections.abc import Sequence
 from decimal import Decimal
 from typing import Self
 
-from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
-    InternalTransactionSchema,
-)
+from application.dto.etherscan_transaction_dtos import InternalTransactionDTO
 from infrastructure.feature_extraction.enums import FeaturesEnum
 
 
@@ -13,7 +11,7 @@ class InternalTransactionsFeatureBuilder:
 
     _features: dict[FeaturesEnum, int | Decimal | float]
 
-    def __init__(self, address: str, transactions: Sequence[InternalTransactionSchema]):
+    def __init__(self, address: str, transactions: Sequence[InternalTransactionDTO]):
         self._address = address.lower()
         self._transactions = tuple(transactions)
         self._features = {}

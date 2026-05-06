@@ -2,9 +2,7 @@ from collections.abc import Sequence
 from decimal import Decimal
 from typing import Self
 
-from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
-    TokenTransfersSchema,
-)
+from application.dto.etherscan_transaction_dtos import TokenTransfersDTO
 from infrastructure.feature_extraction.enums import FeaturesEnum
 
 
@@ -13,7 +11,7 @@ class TokenTransfersFeatureBuilder:
 
     _features: dict[FeaturesEnum, int | Decimal | float]
 
-    def __init__(self, address: str, transfers: Sequence[TokenTransfersSchema]):
+    def __init__(self, address: str, transfers: Sequence[TokenTransfersDTO]):
         self._address = address.lower()
         self._transfers = tuple(transfers)
         self._sent = tuple(
@@ -29,7 +27,7 @@ class TokenTransfersFeatureBuilder:
         self._features = {}
 
     @staticmethod
-    def _scaled_amount(tx: TokenTransfersSchema) -> Decimal:
+    def _scaled_amount(tx: TokenTransfersDTO) -> Decimal:
         """Converts raw token value using token decimals."""
 
         return Decimal(tx.value) / (Decimal(10) ** tx.token_decimal)

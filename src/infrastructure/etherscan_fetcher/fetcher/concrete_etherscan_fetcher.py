@@ -1,24 +1,23 @@
 import asyncio
 from asyncio import TaskGroup
 from functools import partial
-from typing import Mapping, Sequence, final
+from typing import final
 
 import structlog
 
+from application.dto.raw_etherscan_response_dto import (
+    RawEtherscanPayload,
+    RawEtherscanResponseDTO,
+)
+from application.exceptions.exceptions import InvalidEtherscanResponseStatus
 from application.interfaces.done_callback import DoneCallback
 from application.interfaces.http_client import EtherscanClient
 from config.etherscan import etherscan_settings
-from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
-    RawEtherscanResponseDTO,
-)
-from infrastructure.etherscan_fetcher.enums import ActionEnum
+from infrastructure.etherscan_fetcher.enums import ActionEnum, ModuleEnum
 from infrastructure.etherscan_fetcher.fetcher.etherscan_query_builder import (
     EtherscanQueryBuilder,
     QueryDict,
 )
-from infrastructure.exceptions import InvalidEtherscanResponseStatus
-
-type RawEtherscanResponse = Mapping[str, str | list[dict[str, str]]]
 
 log = structlog.getLogger(__name__)
 
@@ -59,11 +58,12 @@ class ConcreteEtherscanFetcher:
                         partial(self._on_done_callback, address=address)
                     )
 
-            return RawEtherscanResponseDTO(
+            raw_dto = RawEtherscanResponseDTO(
                 normal_transactions=tasks[0].result(),
                 internal_transactions=tasks[1].result(),
                 token_transfers=tasks[2].result(),
             )
+            return raw_dto
 
         except* InvalidEtherscanResponseStatus as err_gr:
             log.error("Etherscan status error", errors=err_gr.exceptions)
@@ -72,13 +72,13 @@ class ConcreteEtherscanFetcher:
             log.error("HTTP Timeout error", errors=err_gr.exceptions)
             raise
 
-    async def get_transactions(self, *, address: str) -> RawEtherscanResponse:
+    async def get_transactions(self, *, address: str) -> RawEtherscanPayload:
         """Building and query by 'EtherscanQueryBuilder' and fetching normal transactions by etherscan.io API"""
         query: QueryDict = (
             EtherscanQueryBuilder()
             .address(address=address)
             .action(action=ActionEnum.NORMAL)
-            .module(module="account")
+            .module(module=ModuleEnum.ACCOUNT)
             .page()
             .sort()
             .build()
@@ -87,13 +87,13 @@ class ConcreteEtherscanFetcher:
         raw_data = await self._client(params=query)
         return raw_data
 
-    async def get_internal_transactions(self, *, address: str) -> RawEtherscanResponse:
+    async def get_internal_transactions(self, *, address: str) -> RawEtherscanPayload:
         """Building and query by 'EtherscanQueryBuilder' and fetching internal transactions by etherscan.io API"""
         query: QueryDict = (
             EtherscanQueryBuilder()
             .address(address=address)
             .action(action=ActionEnum.INTERNAL)
-            .module(module="account")
+            .module(module=ModuleEnum.ACCOUNT)
             .page()
             .sort()
             .build()
@@ -102,13 +102,13 @@ class ConcreteEtherscanFetcher:
         raw_data = await self._client(params=query)
         return raw_data
 
-    async def get_token_transfers(self, *, address: str) -> RawEtherscanResponse:
+    async def get_token_transfers(self, *, address: str) -> RawEtherscanPayload:
         """Building and query by 'EtherscanQueryBuilder' and fetching token transfers by etherscan.io API"""
         query: QueryDict = (
             EtherscanQueryBuilder()
             .address(address=address)
             .action(action=ActionEnum.TOKEN)
-            .module(module="account")
+            .module(module=ModuleEnum.ACCOUNT)
             .page()
             .sort()
             .build()

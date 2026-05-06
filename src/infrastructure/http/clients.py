@@ -4,11 +4,9 @@ from typing import Mapping, final
 import stamina
 from aiohttp import ClientSession
 
+from application.dto.raw_etherscan_response_dto import RawEtherscanPayload
 from application.interfaces.http_client import HTTPClient
 from config.etherscan import etherscan_settings
-from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
-    RawEtherscanResponse,
-)
 from infrastructure.etherscan_fetcher.fetcher.etherscan_query_builder import QueryDict
 from infrastructure.exceptions import InvalidEtherscanResponseStatus
 
@@ -38,7 +36,7 @@ class EtherscanHTTPClient:
 
     async def __call__(
         self, params: QueryDict, url: str | None = None
-    ) -> RawEtherscanResponse:
+    ) -> RawEtherscanPayload:
         response = await self._client.get(
             url=url if url is not None else etherscan_settings.etherscan_url,
             params=params,

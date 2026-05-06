@@ -5,10 +5,8 @@ from application.interfaces.ml_components import (
     MlImputer,
     MlScaler,
 )
+from application.interfaces.feature_extraction import BuiltFeatures
 from domain.value_objects.risk_score_vo import RiskScoreValueObject
-from infrastructure.feature_extraction.director_of_feature_extraction import (
-    BuiltFeatures,
-)
 from infrastructure.utils import from_raw_dict_to_dataframe
 
 

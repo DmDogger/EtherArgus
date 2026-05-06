@@ -1,9 +1,7 @@
 import pytest
 
+from application.interfaces.feature_extraction import FeatureExtractionDirector
 from domain.value_objects.risk_score_vo import RiskScoreValueObject
-from infrastructure.feature_extraction.director_of_feature_extraction import (
-    DirectorOfFeatureExtraction,
-)
 from infrastructure.ml.fraud_score_classifier import ConcreteFraudScoreClassifier
 
 
@@ -12,10 +10,19 @@ class TestMlFraudScoreClassifier:
     async def test_fraud_score_model_predict_and_returns_instance_of_risk_score_vo(
         self,
         fraud_score_classifier: ConcreteFraudScoreClassifier,
-        director_of_feature_builder: DirectorOfFeatureExtraction,
+        director_of_feature_builder: FeatureExtractionDirector,
+        ethereum_address: str,
+        transactions,
+        internal_transactions,
+        token_transfers,
     ) -> None:
 
-        features = director_of_feature_builder()
+        features = director_of_feature_builder.build_features(
+            ethereum_address,
+            transactions,
+            internal_transactions,
+            token_transfers,
+        )
         preds = fraud_score_classifier.predict(features)
 
         assert isinstance(preds, RiskScoreValueObject)

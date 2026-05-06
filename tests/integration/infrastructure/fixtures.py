@@ -1,21 +1,19 @@
 from collections.abc import AsyncIterator, Sequence
-from pathlib import Path
 from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
 from aiohttp import ClientSession, TCPConnector
 
+from application.dto.etherscan_transaction_dtos import (
+    InternalTransactionDTO,
+    NormalTransactionDTO,
+    TokenTransfersDTO,
+)
+from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
+from application.interfaces.feature_extraction import FeatureExtractionDirector
 from application.interfaces.model_loader import ModelLoader
-from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
-    RawEtherscanResponseDTO,
-)
 from infrastructure.etherscan_fetcher.mapper.etherscan_mapper import EtherscanMapper
-from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
-    InternalTransactionSchema,
-    NormalTransactionSchema,
-    TokenTransfersSchema,
-)
 from infrastructure.feature_extraction.director_of_feature_extraction import (
     DirectorOfFeatureExtraction,
 )
@@ -82,12 +80,17 @@ async def make_director_of_feature_extraction(
     etherscan_fetcher,
     etherscan_mapper: EtherscanMapper,
 ):
-    async def _factory(address: str) -> DirectorOfFeatureExtraction:
+    async def _factory(address: str) -> tuple[
+        FeatureExtractionDirector,
+        Sequence[NormalTransactionDTO],
+        Sequence[InternalTransactionDTO],
+        Sequence[TokenTransfersDTO],
+    ]:
         dto = await etherscan_fetcher(address)
         normal = etherscan_mapper.from_raw_normal_transactions(dto)
         internal = etherscan_mapper.from_raw_internal_transactions(dto)
         tokens = etherscan_mapper.from_raw_token_transfers(dto)
-        return DirectorOfFeatureExtraction(address, normal, internal, tokens)
+        return DirectorOfFeatureExtraction(), normal, internal, tokens
 
     return _factory
 
@@ -104,7 +107,7 @@ async def raw_etherscan_response_dto(
 async def transactions(
     etherscan_mapper: EtherscanMapper,
     raw_etherscan_response_dto: RawEtherscanResponseDTO,
-) -> list[NormalTransactionSchema]:
+) -> list[NormalTransactionDTO]:
     return etherscan_mapper.from_raw_normal_transactions(raw_etherscan_response_dto)
 
 
@@ -112,7 +115,7 @@ async def transactions(
 async def internal_transactions(
     etherscan_mapper: EtherscanMapper,
     raw_etherscan_response_dto: RawEtherscanResponseDTO,
-) -> list[InternalTransactionSchema]:
+) -> list[InternalTransactionDTO]:
     return etherscan_mapper.from_raw_internal_transactions(raw_etherscan_response_dto)
 
 
@@ -120,14 +123,14 @@ async def internal_transactions(
 async def token_transfers(
     etherscan_mapper: EtherscanMapper,
     raw_etherscan_response_dto: RawEtherscanResponseDTO,
-) -> list[TokenTransfersSchema]:
+) -> list[TokenTransfersDTO]:
     return etherscan_mapper.from_raw_token_transfers(raw_etherscan_response_dto)
 
 
 @pytest_asyncio.fixture
 async def normal_builder(
     ethereum_address: str,
-    transactions: Sequence[NormalTransactionSchema],
+    transactions: Sequence[NormalTransactionDTO],
 ) -> NormalTransactionsFeatureBuilder:
     return NormalTransactionsFeatureBuilder(ethereum_address, transactions)
 
@@ -135,7 +138,7 @@ async def normal_builder(
 @pytest_asyncio.fixture
 async def internal_builder(
     ethereum_address: str,
-    internal_transactions: Sequence[InternalTransactionSchema],
+    internal_transactions: Sequence[InternalTransactionDTO],
 ) -> InternalTransactionsFeatureBuilder:
     return InternalTransactionsFeatureBuilder(
         ethereum_address,
@@ -146,7 +149,7 @@ async def internal_builder(
 @pytest_asyncio.fixture
 async def token_builder(
     ethereum_address: str,
-    token_transfers: Sequence[TokenTransfersSchema],
+    token_transfers: Sequence[TokenTransfersDTO],
 ) -> TokenTransfersFeatureBuilder:
     return TokenTransfersFeatureBuilder(ethereum_address, token_transfers)
 
@@ -154,16 +157,11 @@ async def token_builder(
 @pytest_asyncio.fixture
 async def director_of_feature_builder(
     ethereum_address: str,
-    transactions: Sequence[NormalTransactionSchema],
-    internal_transactions: Sequence[InternalTransactionSchema],
-    token_transfers: Sequence[TokenTransfersSchema],
-) -> DirectorOfFeatureExtraction:
-    return DirectorOfFeatureExtraction(
-        ethereum_address,
-        transactions,
-        internal_transactions,
-        token_transfers,
-    )
+    transactions: Sequence[NormalTransactionDTO],
+    internal_transactions: Sequence[InternalTransactionDTO],
+    token_transfers: Sequence[TokenTransfersDTO],
+) -> FeatureExtractionDirector:
+    return DirectorOfFeatureExtraction()
 
 
 @pytest_asyncio.fixture

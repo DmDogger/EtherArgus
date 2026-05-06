@@ -1,10 +1,13 @@
-from typing import Mapping, Protocol, Sequence
+from typing import Protocol
 
-type RawEtherscanPayload = Mapping[str, str | list[dict[str, str]]]
+from application.dto.raw_etherscan_response_dto import (
+    RawEtherscanPayload,
+    RawEtherscanResponseDTO,
+)
 
 
 class EtherFetcher(Protocol):
-    async def __call__(self, address: str) -> Sequence[RawEtherscanPayload]: ...
+    async def __call__(self, address: str) -> RawEtherscanResponseDTO: ...
 
     async def get_transactions(self, address: str) -> RawEtherscanPayload: ...
 

@@ -2,7 +2,7 @@ from copy import copy
 from typing import Self, TypedDict, Literal
 
 from config.etherscan import etherscan_settings
-from infrastructure.etherscan_fetcher.enums import ActionEnum
+from infrastructure.etherscan_fetcher.enums import ActionEnum, ModuleEnum
 
 
 class QueryDict(TypedDict, total=False):
@@ -30,12 +30,12 @@ class EtherscanQueryBuilder:
         self._query["address"] = address
         return self
 
-    def module(self, module: str) -> Self:
-        self._query["module"] = module
+    def module(self, module: ModuleEnum) -> Self:
+        self._query["module"] = module.value
         return self
 
     def action(self, action: ActionEnum) -> Self:
-        self._query["action"] = action.value
+        self._query["action"] = action.value  # type: ignore[assignment]
         return self
 
     def start_block(self, start: int = 1) -> Self:

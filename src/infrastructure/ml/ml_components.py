@@ -39,4 +39,4 @@ class ConcreteMlClassificationModel:
 
     def __call__(self, data: Any) -> RiskScoreValueObject:
         y_probs = self._artifacts.model.predict_proba(data)
-        return RiskScoreValueObject(score=y_probs[0][1])
+        return RiskScoreValueObject(value=y_probs[0][1])

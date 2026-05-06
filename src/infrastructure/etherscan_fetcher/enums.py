@@ -11,3 +11,7 @@ class TaskStatusEnum(Enum):
     SUCCESS = "Success"
     ERROR = "Error"
     CANCELLED = "Cancelled"
+
+
+class ModuleEnum(Enum):
+    ACCOUNT = "account"

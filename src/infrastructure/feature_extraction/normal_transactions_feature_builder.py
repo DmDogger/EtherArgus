@@ -2,9 +2,7 @@ from collections.abc import Sequence
 from decimal import Decimal
 from typing import Self
 
-from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
-    NormalTransactionSchema,
-)
+from application.dto.etherscan_transaction_dtos import NormalTransactionDTO
 from infrastructure.feature_extraction.enums import FeaturesEnum
 
 
@@ -13,7 +11,7 @@ class NormalTransactionsFeatureBuilder:
 
     _features: dict[FeaturesEnum, int | Decimal | float]
 
-    def __init__(self, address: str, transactions: Sequence[NormalTransactionSchema]):
+    def __init__(self, address: str, transactions: Sequence[NormalTransactionDTO]):
         self._transactions = set(filter(lambda tx: tx.is_error == 0, transactions))
         self._address = address.lower()
         self._received = set(

@@ -8,6 +8,11 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from aiohttp import ClientSession
 
+from application.dto.etherscan_transaction_dtos import (
+    InternalTransactionDTO,
+    NormalTransactionDTO,
+    TokenTransfersDTO,
+)
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
@@ -25,6 +30,9 @@ from infrastructure.feature_extraction.token_transfers_feature_builder import (
     TokenTransfersFeatureBuilder,
 )
 from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
+from infrastructure.etherscan_fetcher.mapper.etherscan_mapper import (
+    _FromExternalToDTO,
+)
 from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
     InternalTransactionSchema,
     NormalTransactionSchema,
@@ -106,7 +114,7 @@ def configure_mock_http_json(mock_http_response: AsyncMock):
 @pytest.fixture
 def sequence_of_normal_transactions(
     ethereum_address: str,
-) -> list[NormalTransactionSchema]:
+) -> list[NormalTransactionDTO]:
     counterparty_a = "0x8ba1f109551bd432803012645ac136ddd64dba72"
     counterparty_b = "0xdac17f958d2ee523a2206206994597c13d831ec7"
 
@@ -147,13 +155,18 @@ def sequence_of_normal_transactions(
             "timeStamp": "1695129800",
         },
     ]
-    return [NormalTransactionSchema.model_validate(row) for row in raw_transactions]
+    return [
+        _FromExternalToDTO.normal_transaction_schema_to_dto(
+            NormalTransactionSchema.model_validate(row)
+        )
+        for row in raw_transactions
+    ]
 
 
 @pytest.fixture
 def build_normal_features(
     ethereum_address: str,
-    sequence_of_normal_transactions: list[NormalTransactionSchema],
+    sequence_of_normal_transactions: list[NormalTransactionDTO],
 ) -> Mapping[FeaturesEnum, int | float | Decimal]:
     return (
         NormalTransactionsFeatureBuilder(
@@ -183,7 +196,7 @@ def build_normal_features(
 @pytest.fixture
 def sequence_of_internal_transactions(
     ethereum_address: str,
-) -> tuple[InternalTransactionSchema, ...]:
+) -> tuple[InternalTransactionDTO, ...]:
     counterparty = "0x1000000000000000000000000000000000000001"
     raw_transactions = (
         {
@@ -212,14 +225,17 @@ def sequence_of_internal_transactions(
         },
     )
     return tuple(
-        InternalTransactionSchema.model_validate(row) for row in raw_transactions
+        _FromExternalToDTO.internal_transaction_schema_to_dto(
+            InternalTransactionSchema.model_validate(row)
+        )
+        for row in raw_transactions
     )
 
 
 @pytest.fixture
 def build_internal_features(
     ethereum_address: str,
-    sequence_of_internal_transactions: tuple[InternalTransactionSchema, ...],
+    sequence_of_internal_transactions: tuple[InternalTransactionDTO, ...],
 ) -> Mapping[FeaturesEnum, int | float | Decimal]:
     return (
         InternalTransactionsFeatureBuilder(
@@ -235,7 +251,7 @@ def build_internal_features(
 @pytest.fixture
 def sequence_of_token_transfers(
     ethereum_address: str,
-) -> tuple[TokenTransfersSchema, ...]:
+) -> tuple[TokenTransfersDTO, ...]:
     counterparty_a = "0x2000000000000000000000000000000000000002"
     counterparty_b = "0x3000000000000000000000000000000000000003"
     contract_a = "0x4000000000000000000000000000000000000004"
@@ -282,13 +298,18 @@ def sequence_of_token_transfers(
             "timeStamp": "1695126000",
         },
     )
-    return tuple(TokenTransfersSchema.model_validate(row) for row in raw_transfers)
+    return tuple(
+        _FromExternalToDTO.token_transfers_schema_to_dto(
+            TokenTransfersSchema.model_validate(row)
+        )
+        for row in raw_transfers
+    )
 
 
 @pytest.fixture
 def build_token_transfer_features(
     ethereum_address: str,
-    sequence_of_token_transfers: tuple[TokenTransfersSchema, ...],
+    sequence_of_token_transfers: tuple[TokenTransfersDTO, ...],
 ) -> Mapping[FeaturesEnum, int | float | Decimal]:
     return (
         TokenTransfersFeatureBuilder(

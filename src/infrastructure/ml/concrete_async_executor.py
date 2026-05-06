@@ -1,11 +1,11 @@
 import asyncio
 import os
-from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
-from typing import TypeVar, final
+from typing import Callable, ParamSpec, TypeVar, final
 
 import structlog
 
+P = ParamSpec("P")
 T = TypeVar("T")
 
 log = structlog.getLogger(__name__)
@@ -29,6 +29,7 @@ class ConcreteAsyncExecutor:
 
         self._executor.shutdown(wait=True)
 
-    async def __call__(self, fn: Callable[[], T]) -> T:
+    async def __call__(self, fn: Callable[P, T], *args: P.args) -> T:
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(self._executor, fn)
+        fut = loop.run_in_executor(self._executor, fn, *args)
+        return await fut

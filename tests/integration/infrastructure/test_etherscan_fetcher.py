@@ -1,8 +1,6 @@
 import pytest
 
-from infrastructure.etherscan_fetcher.dto.raw_etherscan_response_dto import (
-    RawEtherscanResponseDTO,
-)
+from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )

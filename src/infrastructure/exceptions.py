@@ -1,10 +1,8 @@
-class InfrastructureError(Exception):
-    """Wrapper for a base exception"""
+"""Compatibility re-exports; canonical definitions live in application.exceptions."""
 
+from application.exceptions.exceptions import (
+    InvalidEtherscanResponseStatus,
+    ModelLoadingError,
+)
 
-class InvalidEtherscanResponseStatus(InfrastructureError):
-    """Raised when we've got '0' instead of '1' in the status field in response from etherscan."""
-
-
-class ModelLoadingError(InfrastructureError):
-    """ """
+__all__ = ["InvalidEtherscanResponseStatus", "ModelLoadingError"]

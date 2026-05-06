@@ -1,6 +1,13 @@
+from collections.abc import Sequence
 from decimal import Decimal
 from enum import Enum
 from typing import Mapping, Protocol, Self
+
+from application.dto.etherscan_transaction_dtos import (
+    InternalTransactionDTO,
+    NormalTransactionDTO,
+    TokenTransfersDTO,
+)
 
 type BuiltFeatures = Mapping[Enum, int | Decimal | float]
 
@@ -84,4 +91,14 @@ class TokenTransfersFeatureBuilder(Protocol):
 
 
 class FeatureExtractionDirector(Protocol):
-    def __call__(self) -> BuiltFeatures: ...
+    def build_features(
+        self,
+        address: str,
+        normal_transactions: Sequence[NormalTransactionDTO],
+        internal_transactions: Sequence[InternalTransactionDTO],
+        token_transfers: Sequence[TokenTransfersDTO],
+    ) -> BuiltFeatures: ...
+
+
+class FeatureExtractionDirectorFactory(Protocol):
+    def __call__(self) -> FeatureExtractionDirector: ...
