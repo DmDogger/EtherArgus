@@ -9,7 +9,7 @@ from infrastructure.ml.fraud_score_classifier import MonitoredFraudScoreClassifi
 
 
 class TestMonitoredFraudScoreClassifier:
-    async def test_predict_observes_latency_histogram_on_success(
+    def test_predict_observes_latency_histogram_on_success(
         self,
         metrics_registry: CollectorRegistry,
         built_features_random: Mapping[FeaturesEnum, Decimal],
@@ -26,7 +26,7 @@ class TestMonitoredFraudScoreClassifier:
         assert samples["sample_histogram_sum"] > 0.0
 
 
-    async def test_predict_increments_error_counter_when_classifier_raises(
+    def test_predict_increments_error_counter_when_classifier_raises(
         self,
         metrics_registry: CollectorRegistry,
         monitored_fraud_score_classifier: MonitoredFraudScoreClassifier,
