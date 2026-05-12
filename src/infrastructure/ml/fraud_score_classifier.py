@@ -1,5 +1,7 @@
 from typing import final
 
+from application.interfaces.fraud_score_classifier import FraudScoreClassifier
+from application.interfaces.metrics_client import MetricsClient
 from application.interfaces.ml_components import (
     MlClassificationModel,
     MlImputer,
@@ -25,3 +27,14 @@ class ConcreteFraudScoreClassifier:
         scaled = self._scaler(imputed)
         ready_risk_score = self._model(scaled)
         return ready_risk_score
+
+
+@final
+class MonitoredFraudScoreClassifier:
+    def __init__(self, predictor: FraudScoreClassifier, client: MetricsClient):
+        self._predictor = predictor
+        self._observability_client = client
+
+    def predict(self, data_to_predict: BuiltFeatures, /) -> RiskScoreValueObject:
+        with self._observability_client:
+            return self._predictor.predict(data_to_predict)

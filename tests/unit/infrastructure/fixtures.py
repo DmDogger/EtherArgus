@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from collections.abc import Mapping
 from decimal import Decimal
 from typing import Any
@@ -7,12 +8,14 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from aiohttp import ClientSession
+from prometheus_client import CollectorRegistry, Counter, Histogram
 
 from application.dto.etherscan_transaction_dtos import (
     InternalTransactionDTO,
     NormalTransactionDTO,
     TokenTransfersDTO,
 )
+from application.interfaces.feature_extraction import BuiltFeatures
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
@@ -38,6 +41,7 @@ from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
     NormalTransactionSchema,
     TokenTransfersSchema,
 )
+from infrastructure.metrics.clients import InferencePrometheusMetricClient
 
 
 @pytest.fixture
@@ -332,3 +336,45 @@ def build_token_transfer_features(
         .erc20_uniq_rec_token_name()
         .build()
     )
+
+
+@pytest.fixture
+def metrics_registry() -> CollectorRegistry:
+    registry = CollectorRegistry()
+    return registry
+
+
+@pytest.fixture
+def sample_error_counter(metrics_registry: CollectorRegistry) -> Counter:
+    counter = Counter(
+        name="sample_counter",
+        documentation="Dummy Counter :)",
+        registry=metrics_registry,
+    )
+    return counter
+
+
+@pytest.fixture
+def sample_histogram(metrics_registry: CollectorRegistry) -> Histogram:
+    hg = Histogram(
+        name="sample_histogram",
+        documentation="Dummy Histo ;)",
+        registry=metrics_registry,
+    )
+    return hg
+
+
+@pytest.fixture
+def inference_metrics_client(
+    sample_error_counter: Counter, sample_histogram: Histogram
+) -> InferencePrometheusMetricClient:
+    inference_client = InferencePrometheusMetricClient(
+        counter=sample_error_counter, histogram=sample_histogram
+    )
+    return inference_client
+
+
+@pytest.fixture
+def built_features_random() -> BuiltFeatures:
+    rng = random.Random(42)
+    return {feature: rng.uniform(0.0, 1_000.0) for feature in FeaturesEnum}

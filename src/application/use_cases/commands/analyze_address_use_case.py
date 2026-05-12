@@ -4,7 +4,9 @@ from application.exceptions.exceptions import BuildFeaturesError, AnalysisReques
 from application.interfaces.build_features import BuildFeaturesUseCase
 from application.interfaces.classify_fraud_use_case import ClassifyFraudUseCase
 from application.interfaces.feature_extraction import BuiltFeatures
-from application.interfaces.save_analysis_results_use_case import SaveAnalysisResultsUseCase
+from application.interfaces.save_analysis_results_use_case import (
+    SaveAnalysisResultsUseCase,
+)
 from domain.entities.analysis_result import AnalysisResult
 from domain.events.address_analyzed import AddressAnalyzed
 from domain.exceptions.exceptions import DomainValidationError
@@ -23,7 +25,6 @@ class AnalyzeAddressUseCase:
         self._save_analysis_results_use_case = save_analysis_results_use_case
         self._build_features_use_case = build_features_use_case
         self._fraud_score_classifier = classify_fraud_use_case
-
 
     async def __call__(self, address: str) -> None:
         try:

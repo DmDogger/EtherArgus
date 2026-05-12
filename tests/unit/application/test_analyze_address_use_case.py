@@ -3,7 +3,9 @@ from unittest.mock import AsyncMock
 import pytest
 
 from application.interfaces.feature_extraction import BuiltFeatures
-from application.use_cases.commands.analyze_address_use_case import AnalyzeAddressUseCase
+from application.use_cases.commands.analyze_address_use_case import (
+    AnalyzeAddressUseCase,
+)
 
 
 class TestAnalyzeAddressUseCaseUnit:
@@ -16,7 +18,9 @@ class TestAnalyzeAddressUseCaseUnit:
     ) -> None:
         await analyze_address_use_case(address=sample_eth_address)
 
-        mock_build_features_use_case.assert_awaited_once_with(address=sample_eth_address)
+        mock_build_features_use_case.assert_awaited_once_with(
+            address=sample_eth_address
+        )
 
     @pytest.mark.asyncio
     async def test_classify_use_case_receives_built_features_stub(

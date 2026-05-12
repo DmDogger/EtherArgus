@@ -1,7 +1,9 @@
 from collections.abc import AsyncIterable
+from dataclasses import dataclass
 
 from aiohttp import ClientSession
 from dishka import FromDishka, Provider, Scope, provide
+from prometheus_client import Counter, Histogram
 
 from application.interfaces.model_loader import ModelLoader
 from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
@@ -16,6 +18,19 @@ from infrastructure.ml import ConcreteAsyncExecutor, ConcreteModelLoader
 
 class InfrastructureProviders(Provider):
     scope = Scope.APP
+
+    @provide
+    def inference_metrics(self) -> tuple[Counter, Histogram]:
+        err_counter = Counter(
+            "ether_ml_fraud_analysis_requests_total", "Total analysis requests."
+        )
+
+        analysis_duration_seconds = Histogram(
+            "ether_ml_fraud_analysis_duration_seconds",
+            "Analysis pipeline duration in seconds.",
+        )
+
+        return err_counter, analysis_duration_seconds
 
     @provide
     async def aiohttp_client_session(self) -> AsyncIterable[ClientSession]:
