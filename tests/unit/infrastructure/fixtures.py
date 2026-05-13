@@ -16,10 +16,13 @@ from application.dto.etherscan_transaction_dtos import (
     TokenTransfersDTO,
 )
 from application.interfaces.feature_extraction import BuiltFeatures
-from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan.building.etherscan_query_director import (
+    EtherscanQueryDirector,
+)
+from infrastructure.etherscan.fetching.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
-from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
+from infrastructure.etherscan.fetching.etherscan_done_callback import (
     EtherscanDoneCallback,
 )
 from infrastructure.feature_extraction.enums import FeaturesEnum
@@ -33,10 +36,10 @@ from infrastructure.feature_extraction.token_transfers_feature_builder import (
     TokenTransfersFeatureBuilder,
 )
 from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
-from infrastructure.etherscan_fetcher.mapper.etherscan_mapper import (
+from infrastructure.etherscan.mapper.etherscan_mapper import (
     _FromExternalToDTO,
 )
-from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
+from infrastructure.etherscan.schemas.etherscan_schemas import (
     InternalTransactionSchema,
     NormalTransactionSchema,
     TokenTransfersSchema,
@@ -76,6 +79,7 @@ def concrete_etherscan_fetcher(
 ) -> ConcreteEtherscanFetcher:
     return ConcreteEtherscanFetcher(
         EtherscanHTTPClient(AioHTTPClient(mock_client_session)),
+        EtherscanQueryDirector(),
         done_callback,
     )
 
@@ -86,6 +90,7 @@ def concrete_etherscan_fetcher_class(
 ) -> ConcreteEtherscanFetcher:
     return ConcreteEtherscanFetcher(
         EtherscanHTTPClient(AioHTTPClient(mock_client_session_class)),
+        EtherscanQueryDirector(),
         EtherscanDoneCallback(),
     )
 

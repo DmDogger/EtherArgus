@@ -6,10 +6,13 @@ from dishka import FromDishka, Provider, Scope, provide
 from prometheus_client import Counter, Histogram
 
 from application.interfaces.model_loader import ModelLoader
-from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan.building.etherscan_query_director import (
+    EtherscanQueryDirector,
+)
+from infrastructure.etherscan.fetching.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
-from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
+from infrastructure.etherscan.fetching.etherscan_done_callback import (
     EtherscanDoneCallback,
 )
 from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
@@ -56,5 +59,6 @@ class ApplicationProviders(Provider):
     ) -> ConcreteEtherscanFetcher:
         return ConcreteEtherscanFetcher(
             EtherscanHTTPClient(AioHTTPClient(client)),
+            EtherscanQueryDirector(),
             EtherscanDoneCallback(),
         )

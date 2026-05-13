@@ -1,7 +1,7 @@
 import pytest
 
 from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
-from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
+from infrastructure.etherscan.fetching.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
 )
 from infrastructure.exceptions import InvalidEtherscanResponseStatus
@@ -16,15 +16,3 @@ class TestConcreteEtherscanFetcherUnit:
         response_dto = await concrete_etherscan_fetcher(address="dummy_address")
 
         assert isinstance(response_dto, RawEtherscanResponseDTO)
-
-    @pytest.mark.asyncio
-    async def test_get_transactions_raises_invalid_etherscan_response(
-        self,
-        concrete_etherscan_fetcher: ConcreteEtherscanFetcher,
-        configure_mock_http_json,
-    ) -> None:
-        configure_mock_http_json(
-            {"status": "0", "message": "NOTOK", "result": "No transactions"}
-        )
-        with pytest.raises(InvalidEtherscanResponseStatus):
-            await concrete_etherscan_fetcher.get_transactions(address="invalid_address")

@@ -25,7 +25,6 @@ class TestMonitoredFraudScoreClassifier:
 
         assert samples["sample_histogram_sum"] > 0.0
 
-
     def test_predict_increments_error_counter_when_classifier_raises(
         self,
         metrics_registry: CollectorRegistry,

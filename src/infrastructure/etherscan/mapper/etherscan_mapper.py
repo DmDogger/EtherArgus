@@ -12,7 +12,7 @@ from application.dto.raw_etherscan_response_dto import (
     RawEtherscanPayload,
     RawEtherscanResponseDTO,
 )
-from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
+from infrastructure.etherscan.schemas.etherscan_schemas import (
     InternalTransactionSchema,
     NormalTransactionSchema,
     TokenTransfersSchema,

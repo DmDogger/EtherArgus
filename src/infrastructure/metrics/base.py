@@ -7,6 +7,7 @@ from typing import Self
 class BaseMetricClient(ABC):
     def __init__(self):
         self._timer: contextvars.ContextVar[float] = contextvars.ContextVar("_timer")
+        # ^^^ Using this as we run inference in 'loop.run_in_executor' <- so, we need context.
 
     def __enter__(self) -> Self:
         when_started = time.perf_counter()
@@ -17,13 +18,11 @@ class BaseMetricClient(ABC):
         if exc_type is not None:
             self.set_error()
         else:
-            when_end =  time.perf_counter() - self._timer.get()
+            when_end = time.perf_counter() - self._timer.get()
             self.set_latency(latency=when_end)
 
     @abstractmethod
     def set_latency(self, latency: float) -> None: ...
 
     @abstractmethod
-    def set_error(self, amount: int = 1) -> None : ...
-
-
+    def set_error(self, amount: int = 1) -> None: ...

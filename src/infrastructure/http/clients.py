@@ -7,7 +7,7 @@ from aiohttp import ClientSession
 from application.dto.raw_etherscan_response_dto import RawEtherscanPayload
 from application.interfaces.http_client import HTTPClient
 from config.etherscan import etherscan_settings
-from infrastructure.etherscan_fetcher.fetcher.etherscan_query_builder import QueryDict
+from infrastructure.etherscan.building.etherscan_query_builder import QueryDict
 from infrastructure.exceptions import InvalidEtherscanResponseStatus
 
 type HTTPResponse = Mapping[str, str | list[dict[str, str]]]

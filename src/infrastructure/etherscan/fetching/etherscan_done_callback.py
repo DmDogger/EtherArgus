@@ -4,7 +4,7 @@ from typing import final
 
 import structlog
 
-from infrastructure.etherscan_fetcher.enums import TaskStatusEnum
+from infrastructure.etherscan.enums import TaskStatusEnum
 
 log = structlog.getLogger(__name__)
 

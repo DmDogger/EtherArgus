@@ -13,7 +13,11 @@ from application.dto.etherscan_transaction_dtos import (
 from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
 from application.interfaces.feature_extraction import FeatureExtractionDirector
 from application.interfaces.model_loader import ModelLoader
-from infrastructure.etherscan_fetcher.mapper.etherscan_mapper import EtherscanMapper
+from infrastructure.etherscan.fetching.concrete_etherscan_fetcher import (
+    ConcreteEtherscanFetcher,
+    MonitoredEtherscanFetcher,
+)
+from infrastructure.etherscan.mapper.etherscan_mapper import EtherscanMapper
 from infrastructure.feature_extraction.director_of_feature_extraction import (
     DirectorOfFeatureExtraction,
 )
@@ -64,17 +68,18 @@ async def aiohttp_client_session() -> AsyncIterator[ClientSession]:
 @pytest_asyncio.fixture
 async def etherscan_fetcher(
     aiohttp_client_session: ClientSession,
-):
-    from infrastructure.etherscan_fetcher.fetcher.concrete_etherscan_fetcher import (
-        ConcreteEtherscanFetcher,
+) -> ConcreteEtherscanFetcher:
+    from infrastructure.etherscan.building.etherscan_query_director import (
+        EtherscanQueryDirector,
     )
-    from infrastructure.etherscan_fetcher.fetcher.etherscan_done_callback import (
+    from infrastructure.etherscan.fetching.etherscan_done_callback import (
         EtherscanDoneCallback,
     )
     from infrastructure.http.clients import AioHTTPClient, EtherscanHTTPClient
 
     return ConcreteEtherscanFetcher(
         EtherscanHTTPClient(AioHTTPClient(aiohttp_client_session)),
+        EtherscanQueryDirector(),
         EtherscanDoneCallback(),
     )
 
@@ -215,5 +220,16 @@ async def monitored_fraud_score_classifier(
 ) -> MonitoredFraudScoreClassifier:
     return MonitoredFraudScoreClassifier(
         predictor=fraud_score_classifier,
+        client=inference_metrics_client,
+    )
+
+
+@pytest_asyncio.fixture
+async def monitored_etherscan_fetcher(
+    etherscan_fetcher: ConcreteEtherscanFetcher,
+    inference_metrics_client: PrometheusMetricClient,
+) -> MonitoredEtherscanFetcher:
+    return MonitoredEtherscanFetcher(
+        fetcher=etherscan_fetcher,
         client=inference_metrics_client,
     )

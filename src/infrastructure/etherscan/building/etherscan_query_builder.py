@@ -2,7 +2,7 @@ from copy import copy
 from typing import Self, TypedDict, Literal
 
 from config.etherscan import etherscan_settings
-from infrastructure.etherscan_fetcher.enums import ActionEnum, ModuleEnum
+from infrastructure.etherscan.enums import ActionEnum, ModuleEnum
 
 
 class QueryDict(TypedDict, total=False):
