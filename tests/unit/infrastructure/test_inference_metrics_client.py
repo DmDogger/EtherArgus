@@ -1,19 +1,19 @@
 import pytest
 from prometheus_client import CollectorRegistry
 
-from infrastructure.metrics.clients import InferencePrometheusMetricClient
+from infrastructure.metrics.prometheus_metrics_client import PrometheusMetricClient
 
 
-class TestInferenceMetricsClient:
+class TestPrometheusMetricsClient:
     def test_error_counter_correctly_increment_value(
         self,
-        inference_metrics_client: InferencePrometheusMetricClient,
+        inference_metrics_client: PrometheusMetricClient,
         metrics_registry: CollectorRegistry,
     ) -> None:
 
         error_amount = 5
 
-        inference_metrics_client.set_error(amount=error_amount)
+        inference_metrics_client.set_error(error_amount)
 
         samples = {
             sample.name: sample.value
@@ -25,7 +25,7 @@ class TestInferenceMetricsClient:
 
     def test_error_counter_increment_value_with_dunder_exit(
         self,
-        inference_metrics_client: InferencePrometheusMetricClient,
+        inference_metrics_client: PrometheusMetricClient,
         metrics_registry: CollectorRegistry,
     ) -> None:
         with pytest.raises(ValueError):

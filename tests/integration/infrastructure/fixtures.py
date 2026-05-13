@@ -26,8 +26,8 @@ from infrastructure.feature_extraction.normal_transactions_feature_builder impor
 from infrastructure.feature_extraction.token_transfers_feature_builder import (
     TokenTransfersFeatureBuilder,
 )
+from infrastructure.metrics.prometheus_metrics_client import PrometheusMetricClient
 from infrastructure.ml import ConcreteModelLoader, ConcreteAsyncExecutor
-from infrastructure.metrics.clients import InferencePrometheusMetricClient
 from infrastructure.ml.fraud_score_classifier import (
     ConcreteFraudScoreClassifier,
     MonitoredFraudScoreClassifier,
@@ -211,7 +211,7 @@ async def fraud_score_classifier(
 @pytest_asyncio.fixture
 async def monitored_fraud_score_classifier(
     fraud_score_classifier: ConcreteFraudScoreClassifier,
-    inference_metrics_client: InferencePrometheusMetricClient,
+    inference_metrics_client: PrometheusMetricClient,
 ) -> MonitoredFraudScoreClassifier:
     return MonitoredFraudScoreClassifier(
         predictor=fraud_score_classifier,

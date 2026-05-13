@@ -41,7 +41,7 @@ from infrastructure.etherscan_fetcher.schemas.etherscan_schemas import (
     NormalTransactionSchema,
     TokenTransfersSchema,
 )
-from infrastructure.metrics.clients import InferencePrometheusMetricClient
+from infrastructure.metrics.prometheus_metrics_client import PrometheusMetricClient
 
 
 @pytest.fixture
@@ -367,8 +367,8 @@ def sample_histogram(metrics_registry: CollectorRegistry) -> Histogram:
 @pytest.fixture
 def inference_metrics_client(
     sample_error_counter: Counter, sample_histogram: Histogram
-) -> InferencePrometheusMetricClient:
-    inference_client = InferencePrometheusMetricClient(
+) -> PrometheusMetricClient:
+    inference_client = PrometheusMetricClient(
         counter=sample_error_counter, histogram=sample_histogram
     )
     return inference_client
