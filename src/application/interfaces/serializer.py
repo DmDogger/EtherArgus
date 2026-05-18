@@ -1,0 +1,6 @@
+from typing import Any
+
+
+class Serializer:
+    def dumps(self, value: Any) -> Any: ...
+    def loads(self, string: Any) -> Any: ...

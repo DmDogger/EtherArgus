@@ -17,7 +17,6 @@ class TestMonitoredEtherscanFetcher:
 
         await monitored_etherscan_fetcher(address=ethereum_address)
 
-
         samples = {
             sample.name: sample.value
             for metric in metrics_registry.collect()
