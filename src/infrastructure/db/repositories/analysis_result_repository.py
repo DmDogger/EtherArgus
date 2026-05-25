@@ -53,8 +53,6 @@ class SQLAlchemyCoreAnalysisResultRepository:
             entity=entity
         )
 
-        log.error(">>", e=eth_address_db_entity)
-
         await self._connection.execute(
             insert(ethereum_address)
             .values(**asdict(entity.address))
