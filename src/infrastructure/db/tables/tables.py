@@ -8,6 +8,7 @@ from sqlalchemy import (
     Numeric,
     DateTime,
     text,
+    Boolean,
 )
 from sqlalchemy.sql.sqltypes import Enum as SQLAlchemyEnum, Text
 
@@ -65,13 +66,15 @@ analysis_result = Table(
 outbox = Table(
     "outbox",
     metadata,
-    Column("id", UUID, primary_key=True),
+    Column("id", UUID(as_uuid=True), primary_key=True),
     Column("aggregate_type", String, nullable=False),
     Column("aggregate_id", UUID, nullable=False),
     Column("event_type", String, nullable=False),
+    Column("event_id", UUID(as_uuid=True), nullable=False),
     Column("payload", Text),
+    Column("is_processed", Boolean, index=True, default=False),
     Column(
-        "timestamp",
+        "occurred_at",
         DateTime,
         server_default=text("CURRENT_TIMESTAMP"),
         onupdate=text("CURRENT_TIMESTAMP"),

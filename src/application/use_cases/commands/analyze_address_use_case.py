@@ -49,7 +49,7 @@ class AnalyzeAddressUseCase:
                 "Analysis request failed."
                 "Seems you have violated domain validation"
                 f"Error: {err}"
-            )
+            )  # todo: as compensating (saga)
         except BuildFeaturesError as err:
             log.error("Occurred build features error", err=str(err))
             raise

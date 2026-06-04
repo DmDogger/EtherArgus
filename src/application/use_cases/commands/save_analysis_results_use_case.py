@@ -1,10 +1,6 @@
-import structlog
-
 from application.interfaces.repository import Repository
 from application.interfaces.uow import UnitOfWork
 from domain.entities.analysis_result import AnalysisResult
-
-log = structlog.getLogger(__name__)
 
 
 class SaveAnalysisResultsUseCase:

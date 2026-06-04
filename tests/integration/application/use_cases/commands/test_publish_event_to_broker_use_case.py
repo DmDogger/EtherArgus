@@ -1,5 +1,7 @@
+import pytest
 from aiokafka import AIOKafkaConsumer
 
+from application.exceptions.exceptions import InvalidPublishingMethodSelected
 from application.use_cases.commands.publish_event_to_broker_use_case import (
     PublishEventToBrokerUseCase,
 )
@@ -47,11 +49,5 @@ class TestPublishEventToBrokerUseCase:
             )
             for _ in range(10)
         ]
-
-        await publish_event_to_broker_use_case(not_only_one)
-
-        events = await kafka_consumer.getmany(timeout_ms=200)
-
-        all_events = [event for event in events.values()]
-
-        assert len(*all_events) == 10
+        with pytest.raises(InvalidPublishingMethodSelected):
+            await publish_event_to_broker_use_case(not_only_one)

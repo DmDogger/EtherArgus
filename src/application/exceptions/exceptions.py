@@ -16,3 +16,7 @@ class BuildFeaturesError(ApplicationError):
 
 class AnalysisRequestFailed(ApplicationError):
     """ """
+
+
+class InvalidPublishingMethodSelected(ApplicationError):
+    """Raises when selected publish instead of publish many."""

@@ -3,6 +3,7 @@ from typing import final, Sequence
 
 from faststream.kafka import KafkaBroker
 
+from application.exceptions.exceptions import InvalidPublishingMethodSelected
 from application.interfaces.broker import EventPublisher
 from application.interfaces.metrics_client import MetricsClient
 from application.interfaces.serializer import Serializer
@@ -30,16 +31,25 @@ class KafkaEventPublisher:
                 key=key,
             )
         else:
-            coros = [
-                self._broker.publish(
-                    message=self._serializer.dumps(msg),
-                    topic=broker_settings.topic or topic,
-                    key=key,
-                )
-                for msg in message
-            ]
+            raise InvalidPublishingMethodSelected(
+                f"You should use {self.__class__.__name__}'publish_many' method"
+            )
 
-            await asyncio.gather(*coros)
+    async def publish_many(
+        self,
+        messages: Sequence[DomainEvent],
+        topic: str | None = None,
+        key: str | None = None,
+    ) -> None:
+
+        coros_to_publish = [
+            self._broker.publish(
+                message=self._serializer.dumps(message), topic=topic, key=key
+            )
+            for message in messages
+        ]
+
+        await asyncio.gather(*coros_to_publish, return_exceptions=True)
 
 
 @final

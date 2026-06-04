@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 from uuid import uuid4
 
 import pytest
@@ -10,10 +11,19 @@ from domain.enums import RiskLevelEnum
 from infrastructure.db.mappers.analysis_result_db_mapper import (
     ConcreteAnalysisResultDBMapper,
 )
+from infrastructure.db.mappers.outbox_db_mapper import OutboxDBMapper
 from infrastructure.db.repositories.analysis_result_repository import (
     SQLAlchemyCoreAnalysisResultRepository,
 )
-from infrastructure.db.tables.tables import analysis_result, ethereum_address, metadata
+from infrastructure.db.repositories.outbox_repository import (
+    SQLAlchemyCoreOutboxRepository,
+)
+from infrastructure.db.tables.tables import (
+    analysis_result,
+    ethereum_address,
+    metadata,
+    outbox,
+)
 
 TRANSACTIONAL_SEED_WALLET_ADDRESS = "0xdadB0d80178819F2319190D340ce9A924f783711"
 TRANSACTIONAL_SEED_ANALYSIS_ROW_COUNT = 2
@@ -43,6 +53,11 @@ def analysis_result_db_mapper() -> AnalysisResultDBMapper:
     return ConcreteAnalysisResultDBMapper()
 
 
+@pytest.fixture
+def outbox_db_mapper() -> OutboxDBMapper:
+    return OutboxDBMapper()
+
+
 @pytest_asyncio.fixture
 async def analysis_result_repository(
     postgres_async_connection: AsyncConnection,
@@ -51,6 +66,36 @@ async def analysis_result_repository(
     return SQLAlchemyCoreAnalysisResultRepository(
         postgres_async_connection, analysis_result_db_mapper
     )
+
+
+@pytest_asyncio.fixture
+async def transactional_seeded_outbox_repository(
+    postgres_async_engine,
+    outbox_db_mapper,
+):
+    async with postgres_async_engine.connect() as conn:
+        tr = await conn.begin()
+
+        try:
+            await conn.execute(
+                insert(outbox).values(
+                    id=uuid4(),
+                    aggregate_type="default_type",
+                    aggregate_id=uuid4(),
+                    event_type="default_type",
+                    event_id=uuid4(),
+                    payload="default_payload",
+                    is_processed=False,
+                    occurred_at=datetime.now(UTC).replace(tzinfo=None),
+                )
+            )
+
+            yield SQLAlchemyCoreOutboxRepository(
+                connection=conn,
+                mapper=outbox_db_mapper,
+            )
+        finally:
+            await tr.rollback()
 
 
 @pytest_asyncio.fixture
