@@ -66,3 +66,14 @@ class MonitoredKafkaEventPublisher:
     ) -> None:
         with self._observability_client:
             await self._event_publisher.publish(message=message, topic=topic, key=key)
+
+    async def publish_many(
+        self,
+        messages: Sequence[DomainEvent],
+        topic: str | None = None,
+        key: str | None = None,
+    ) -> None:
+        with self._observability_client:
+            await self._event_publisher.publish_many(
+                messages=messages, topic=topic, key=key
+            )
