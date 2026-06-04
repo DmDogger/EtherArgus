@@ -43,7 +43,7 @@ class SQLAlchemyCoreAnalysisResultRepository:
             ]
             return mapped_aggregates
 
-    async def upsert(self, entity: AnalysisResult) -> None:
+    async def save(self, entity: AnalysisResult) -> None:
         eth_address_db_entity: Mapping[str, Any] = self._mapper.to_db_rows(
             entity=entity
         )

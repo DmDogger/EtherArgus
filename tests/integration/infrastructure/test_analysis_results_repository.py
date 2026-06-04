@@ -63,7 +63,7 @@ class TestSQLAlchemyCoreAnalysisResultsRepository:
         analysis_result_repository: SQLAlchemyCoreAnalysisResultRepository,
     ) -> None:
 
-        await analysis_result_repository.upsert(analysis_result_obj)
+        await analysis_result_repository.save(analysis_result_obj)
 
         entities = await analysis_result_repository.get_by_address(
             address=analysis_result_obj.address
