@@ -1,5 +1,5 @@
 from datetime import datetime, UTC
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 import pytest
 import pytest_asyncio
@@ -68,10 +68,16 @@ async def analysis_result_repository(
     )
 
 
+@pytest.fixture
+def static_uuid() -> UUID:
+    return UUID("81fd396a-afb9-4fb9-9b48-4ab2c72f663a")
+
+
 @pytest_asyncio.fixture
 async def transactional_seeded_outbox_repository(
     postgres_async_engine,
     outbox_db_mapper,
+    static_uuid,
 ):
     async with postgres_async_engine.connect() as conn:
         tr = await conn.begin()
@@ -83,7 +89,7 @@ async def transactional_seeded_outbox_repository(
                     aggregate_type="default_type",
                     aggregate_id=uuid4(),
                     event_type="default_type",
-                    event_id=uuid4(),
+                    event_id=static_uuid,
                     payload="default_payload",
                     is_processed=False,
                     occurred_at=datetime.now(UTC).replace(tzinfo=None),

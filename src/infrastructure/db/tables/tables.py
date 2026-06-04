@@ -66,7 +66,12 @@ analysis_result = Table(
 outbox = Table(
     "outbox",
     metadata,
-    Column("id", UUID(as_uuid=True), primary_key=True),
+    Column(
+        "id",
+        UUID(as_uuid=True),
+        server_default=text("gen_random_uuid()"),
+        primary_key=True,
+    ),
     Column("aggregate_type", String, nullable=False),
     Column("aggregate_id", UUID, nullable=False),
     Column("event_type", String, nullable=False),

@@ -25,5 +25,5 @@ class OutboxDBMapper:
             "aggregate_id": event.aggregate_id,
             "event_type": event.event_type,
             "payload": event.payload,
-            "occurred_at": event.occurred_at,
+            "occurred_at": event.occurred_at.replace(tzinfo=None),
         }
