@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Sequence
 
-from application.interfaces.ml_components import (
+from application.interfaces.ml.ml_components import (
     MlClassificationModel,
     MlImputer,
     MlScaler,

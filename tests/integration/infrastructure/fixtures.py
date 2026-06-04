@@ -11,8 +11,8 @@ from application.dto.etherscan_transaction_dtos import (
     TokenTransfersDTO,
 )
 from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
-from application.interfaces.feature_extraction import FeatureExtractionDirector
-from application.interfaces.model_loader import ModelLoader
+from application.interfaces.features.feature_extraction import FeatureExtractionDirector
+from application.interfaces.ml.model_loader import ModelLoader
 from infrastructure.etherscan.fetching.concrete_etherscan_fetcher import (
     ConcreteEtherscanFetcher,
     MonitoredEtherscanFetcher,

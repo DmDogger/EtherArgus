@@ -6,7 +6,9 @@ import pytest_asyncio
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
-from application.interfaces.analysis_result_db_mapper import AnalysisResultDBMapper
+from application.interfaces.persistence.analysis_result_db_mapper import (
+    AnalysisResultDBMapper,
+)
 from domain.enums import RiskLevelEnum
 from infrastructure.db.mappers.analysis_result_db_mapper import (
     ConcreteAnalysisResultDBMapper,
@@ -24,6 +26,7 @@ from infrastructure.db.tables.tables import (
     metadata,
     outbox,
 )
+from infrastructure.serializer.json_serializer import JSONPickleSerializer
 
 TRANSACTIONAL_SEED_WALLET_ADDRESS = "0xdadB0d80178819F2319190D340ce9A924f783711"
 TRANSACTIONAL_SEED_ANALYSIS_ROW_COUNT = 2
@@ -55,7 +58,7 @@ def analysis_result_db_mapper() -> AnalysisResultDBMapper:
 
 @pytest.fixture
 def outbox_db_mapper() -> OutboxDBMapper:
-    return OutboxDBMapper()
+    return OutboxDBMapper(serializer=JSONPickleSerializer())
 
 
 @pytest_asyncio.fixture
@@ -90,7 +93,7 @@ async def transactional_seeded_outbox_repository(
                     aggregate_id=uuid4(),
                     event_type="default_type",
                     event_id=static_uuid,
-                    payload="default_payload",
+                    payload=JSONPickleSerializer().dumps("default_payload"),
                     is_processed=False,
                     occurred_at=datetime.now(UTC).replace(tzinfo=None),
                 )

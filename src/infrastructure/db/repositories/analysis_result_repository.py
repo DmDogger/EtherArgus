@@ -1,18 +1,16 @@
 from dataclasses import asdict
 from typing import Mapping, Any
 
-import structlog
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from application.interfaces.analysis_result_db_mapper import AnalysisResultDBMapper
+from application.interfaces.persistence.analysis_result_db_mapper import (
+    AnalysisResultDBMapper,
+)
 from domain.entities.analysis_result import AnalysisResult
 from domain.value_objects.ethereum_address_vo import EthereumAddressValueObject
 from infrastructure.db.tables.tables import analysis_result, ethereum_address
-
-
-log = structlog.getLogger(__name__)
 
 
 class SQLAlchemyCoreAnalysisResultRepository:
@@ -37,16 +35,13 @@ class SQLAlchemyCoreAnalysisResultRepository:
 
         raw_mappings_data = cursor_result_obj.mappings().all()
 
-        if raw_mappings_data:
+        if not raw_mappings_data:
+            return None
+        else:
             mapped_aggregates = [
                 self._mapper.to_aggregate(value) for value in raw_mappings_data
             ]
             return mapped_aggregates
-        else:
-            log.warning(
-                "Got no results for this address", address=address.wallet_address
-            )
-            return None
 
     async def upsert(self, entity: AnalysisResult) -> None:
         eth_address_db_entity: Mapping[str, Any] = self._mapper.to_db_rows(

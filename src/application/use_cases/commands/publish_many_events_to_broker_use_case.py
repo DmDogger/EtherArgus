@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from application.interfaces.broker import EventPublisher
+from application.interfaces.messaging.broker import EventPublisher
 from domain.events.base import DomainEvent
 
 

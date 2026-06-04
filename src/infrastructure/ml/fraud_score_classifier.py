@@ -1,13 +1,13 @@
 from typing import final
 
-from application.interfaces.fraud_score_classifier import FraudScoreClassifier
-from application.interfaces.metrics_client import MetricsClient
-from application.interfaces.ml_components import (
+from application.interfaces.ml.fraud_score_classifier import FraudScoreClassifier
+from application.interfaces.metrics.metrics_client import MetricsClient
+from application.interfaces.ml.ml_components import (
     MlClassificationModel,
     MlImputer,
     MlScaler,
 )
-from application.interfaces.feature_extraction import BuiltFeatures
+from application.interfaces.features.feature_extraction import BuiltFeatures
 from domain.value_objects.risk_score_vo import RiskScoreValueObject
 from infrastructure.utils import from_raw_dict_to_dataframe
 

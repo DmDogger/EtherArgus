@@ -15,7 +15,7 @@ from application.dto.etherscan_transaction_dtos import (
     NormalTransactionDTO,
     TokenTransfersDTO,
 )
-from application.interfaces.feature_extraction import BuiltFeatures
+from application.interfaces.features.feature_extraction import BuiltFeatures
 from infrastructure.etherscan.building.etherscan_query_director import (
     EtherscanQueryDirector,
 )

@@ -3,7 +3,7 @@ from typing import TypeGuard, Sequence
 
 import pandas as pd
 
-from application.interfaces.feature_extraction import BuiltFeatures
+from application.interfaces.features.feature_extraction import BuiltFeatures
 from domain.events.base import DomainEvent
 
 

@@ -1,12 +1,15 @@
-from typing import Mapping
+from typing import Mapping, TypeVar
 from uuid import UUID
 
 from sqlalchemy import select, not_, insert, update
 from sqlalchemy.ext.asyncio import AsyncConnection
 
+from domain.events.base import DomainEvent
 from domain.events.outbox_entry import OutboxEntry
 from infrastructure.db.mappers.outbox_db_mapper import OutboxDBMapper, OutboxTableValues
 from infrastructure.db.tables.tables import outbox
+
+T = TypeVar("T", bound=DomainEvent)
 
 
 class SQLAlchemyCoreOutboxRepository:
@@ -27,7 +30,7 @@ class SQLAlchemyCoreOutboxRepository:
             mapped_data = [self._mapper.to_event(value) for value in raw_mappings_data]
             return mapped_data
 
-    async def save(self, event: OutboxEntry) -> list[OutboxEntry] | None:
+    async def save(self, event: T) -> list[OutboxEntry] | None:
         db_rows: Mapping[str, OutboxTableValues] = self._mapper.to_db_rows(event)
 
         cursor_result_obj = await self._connection.execute(

@@ -1,7 +1,7 @@
 import pytest
 
-from application.interfaces.repository import Repository
-from application.interfaces.uow import UnitOfWork
+from application.interfaces.persistence.repository import Repository
+from application.interfaces.persistence.uow import UnitOfWork
 from application.use_cases.commands.save_analysis_results_use_case import (
     SaveAnalysisResultsUseCase,
 )

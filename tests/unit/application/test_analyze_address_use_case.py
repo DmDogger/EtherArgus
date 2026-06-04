@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from application.interfaces.feature_extraction import BuiltFeatures
+from application.interfaces.features.feature_extraction import BuiltFeatures
 from application.use_cases.commands.analyze_address_use_case import (
     AnalyzeAddressUseCase,
 )

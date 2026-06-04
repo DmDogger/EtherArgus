@@ -7,7 +7,7 @@ from application.exceptions.exceptions import (
     BuildFeaturesError,
     InvalidEtherscanResponseStatus,
 )
-from application.interfaces.ether_fetcher import EtherFetcher
+from application.interfaces.etherscan.ether_fetcher import EtherFetcher
 
 log = structlog.getLogger(__name__)
 

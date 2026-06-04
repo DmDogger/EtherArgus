@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from application.interfaces.http_client import RequestParams
+from application.interfaces.etherscan.http_client import RequestParams
 
 
 class QueryDirector(Protocol):

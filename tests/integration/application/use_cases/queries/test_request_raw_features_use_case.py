@@ -1,7 +1,9 @@
 import pytest
 
 from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
-from application.interfaces.request_raw_features import RequestRawFeaturesUseCase
+from application.interfaces.use_cases.request_raw_features import (
+    RequestRawFeaturesUseCase,
+)
 
 
 class TestRequestRawFeaturesUseCase:

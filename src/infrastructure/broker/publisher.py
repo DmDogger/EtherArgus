@@ -4,9 +4,9 @@ from typing import final, Sequence
 from faststream.kafka import KafkaBroker
 
 from application.exceptions.exceptions import InvalidPublishingMethodSelected
-from application.interfaces.broker import EventPublisher
-from application.interfaces.metrics_client import MetricsClient
-from application.interfaces.serializer import Serializer
+from application.interfaces.messaging.broker import EventPublisher
+from application.interfaces.metrics.metrics_client import MetricsClient
+from application.interfaces.messaging.serializer import Serializer
 from config.broker import broker_settings
 from domain.events.base import DomainEvent
 from infrastructure.utils.utils import ensures_single_domain_event

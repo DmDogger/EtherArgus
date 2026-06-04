@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from application.interfaces.build_features import BuildFeaturesUseCase
+from application.interfaces.use_cases.build_features import BuildFeaturesUseCase
 
 
 class TestBuildFeaturesUseCase:

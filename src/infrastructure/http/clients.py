@@ -5,7 +5,7 @@ import stamina
 from aiohttp import ClientSession
 
 from application.dto.raw_etherscan_response_dto import RawEtherscanPayload
-from application.interfaces.http_client import HTTPClient
+from application.interfaces.etherscan.http_client import HTTPClient
 from config.etherscan import etherscan_settings
 from infrastructure.etherscan.building.etherscan_query_builder import QueryDict
 from infrastructure.exceptions import InvalidEtherscanResponseStatus

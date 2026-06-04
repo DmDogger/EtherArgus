@@ -2,8 +2,8 @@ from dishka import FromDishka, Provider, Scope, provide
 from faststream.kafka import KafkaBroker
 from prometheus_client import Counter, Histogram
 
-from application.interfaces.model_loader import ModelLoader
-from application.interfaces.serializer import Serializer
+from application.interfaces.ml.model_loader import ModelLoader
+from application.interfaces.messaging.serializer import Serializer
 from application.use_cases.commands.publish_event_to_broker_use_case import (
     PublishEventToBrokerUseCase,
 )

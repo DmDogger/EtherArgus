@@ -9,11 +9,11 @@ from application.dto.raw_etherscan_response_dto import (
     RawEtherscanResponseDTO,
 )
 from application.exceptions.exceptions import InvalidEtherscanResponseStatus
-from application.interfaces.done_callback import DoneCallback
-from application.interfaces.ether_fetcher import EtherFetcher
-from application.interfaces.http_client import EtherscanClient
-from application.interfaces.metrics_client import MetricsClient
-from application.interfaces.query_director import QueryDirector
+from application.interfaces.etherscan.done_callback import DoneCallback
+from application.interfaces.etherscan.ether_fetcher import EtherFetcher
+from application.interfaces.etherscan.http_client import EtherscanClient
+from application.interfaces.metrics.metrics_client import MetricsClient
+from application.interfaces.etherscan.query_director import QueryDirector
 from config.etherscan import etherscan_settings
 
 log = structlog.getLogger(__name__)

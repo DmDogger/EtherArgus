@@ -1,5 +1,5 @@
-from application.interfaces.repository import Repository
-from application.interfaces.uow import UnitOfWork
+from application.interfaces.persistence.repository import Repository
+from application.interfaces.persistence.uow import UnitOfWork
 from domain.entities.analysis_result import AnalysisResult
 
 

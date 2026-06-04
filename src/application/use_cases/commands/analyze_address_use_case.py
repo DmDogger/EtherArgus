@@ -1,10 +1,12 @@
 import structlog
 
 from application.exceptions.exceptions import BuildFeaturesError, AnalysisRequestFailed
-from application.interfaces.build_features import BuildFeaturesUseCase
-from application.interfaces.classify_fraud_use_case import ClassifyFraudUseCase
-from application.interfaces.feature_extraction import BuiltFeatures
-from application.interfaces.save_analysis_results_use_case import (
+from application.interfaces.use_cases.build_features import BuildFeaturesUseCase
+from application.interfaces.use_cases.classify_fraud_use_case import (
+    ClassifyFraudUseCase,
+)
+from application.interfaces.features.feature_extraction import BuiltFeatures
+from application.interfaces.use_cases.save_analysis_results_use_case import (
     SaveAnalysisResultsUseCase,
 )
 from domain.entities.analysis_result import AnalysisResult

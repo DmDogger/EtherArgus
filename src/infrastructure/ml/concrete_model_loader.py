@@ -3,7 +3,7 @@ from typing import final
 
 import structlog
 
-from application.interfaces.async_executor import AsyncExecutor
+from application.interfaces.ml.async_executor import AsyncExecutor
 from infrastructure.exceptions import ModelLoadingError
 from infrastructure.ml.dto.ml_artifacts import MLArtifacts
 from infrastructure.ml.model_registry import ModelRegistry

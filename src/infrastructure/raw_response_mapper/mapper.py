@@ -1,10 +1,10 @@
 from typing import final
 
 from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
-from application.interfaces.etherscan_transactions_mapper import (
+from application.interfaces.etherscan.etherscan_transactions_mapper import (
     EtherscanTransactionsMapper,
 )
-from application.interfaces.response_mapper import TransactionsSequence
+from application.interfaces.etherscan.response_mapper import TransactionsSequence
 
 
 @final

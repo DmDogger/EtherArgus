@@ -1,11 +1,13 @@
 from application.dto.raw_etherscan_response_dto import RawEtherscanResponseDTO
 
-from application.interfaces.feature_extraction import (
+from application.interfaces.features.feature_extraction import (
     BuiltFeatures,
     FeatureExtractionDirector,
 )
-from application.interfaces.request_raw_features import RequestRawFeaturesUseCase
-from application.interfaces.response_mapper import (
+from application.interfaces.use_cases.request_raw_features import (
+    RequestRawFeaturesUseCase,
+)
+from application.interfaces.etherscan.response_mapper import (
     RawResponseMapper,
 )
 

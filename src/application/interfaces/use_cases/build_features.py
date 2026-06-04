@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from application.interfaces.feature_extraction import BuiltFeatures
+from application.interfaces.features.feature_extraction import BuiltFeatures
 
 
 class BuildFeaturesUseCase(Protocol):

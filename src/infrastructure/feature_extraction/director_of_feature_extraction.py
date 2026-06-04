@@ -5,7 +5,7 @@ from application.dto.etherscan_transaction_dtos import (
     NormalTransactionDTO,
     TokenTransfersDTO,
 )
-from application.interfaces.feature_extraction import (
+from application.interfaces.features.feature_extraction import (
     BuiltFeatures,
     InternalTransactionsFeatureBuilder,
     NormalTransactionsFeatureBuilder,

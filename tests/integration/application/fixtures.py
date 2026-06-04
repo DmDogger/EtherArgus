@@ -4,13 +4,13 @@ from typing import Any
 import pytest
 import pytest_asyncio
 
-from application.interfaces.build_features import BuildFeaturesUseCase
-from application.interfaces.feature_extraction import FeatureExtractionDirector
-from application.interfaces.etherscan_transactions_mapper import (
+from application.interfaces.use_cases.build_features import BuildFeaturesUseCase
+from application.interfaces.features.feature_extraction import FeatureExtractionDirector
+from application.interfaces.etherscan.etherscan_transactions_mapper import (
     EtherscanTransactionsMapper,
 )
-from application.interfaces.fraud_score_classifier import FraudScoreClassifier
-from application.interfaces.response_mapper import RawResponseMapper
+from application.interfaces.ml.fraud_score_classifier import FraudScoreClassifier
+from application.interfaces.etherscan.response_mapper import RawResponseMapper
 from application.use_cases.commands.build_features_use_case import (
     BuildFeaturesUseCase as ConcreteBuildFeaturesUseCase,
 )

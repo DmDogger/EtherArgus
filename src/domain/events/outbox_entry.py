@@ -8,4 +8,4 @@ from domain.events.base import DomainEvent
 @dataclass(slots=True)
 class OutboxEntry(DomainEvent):
     event_type: str
-    payload: str
+    payload: DomainEvent

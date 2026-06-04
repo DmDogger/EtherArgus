@@ -2,6 +2,10 @@ from uuid import uuid4, UUID
 
 import pytest
 
+from domain.entities.analysis_result import AnalysisResult
+from domain.events.address_analyzed import AddressAnalyzed
+from domain.events.analysis_requested_event import AnalysisRequestedEvent
+from domain.events.base import DomainEvent
 from domain.events.outbox_entry import OutboxEntry
 from infrastructure.db.repositories.outbox_repository import (
     SQLAlchemyCoreOutboxRepository,
@@ -22,20 +26,18 @@ class TestSQLAlchemyCoreOutboxRepository:
 
     @pytest.mark.asyncio
     async def test_repository_saves_and_returns_result(
-        self, transactional_seeded_outbox_repository: SQLAlchemyCoreOutboxRepository
+        self,
+        address_analyzed_event: AddressAnalyzed,
+        transactional_seeded_outbox_repository: SQLAlchemyCoreOutboxRepository,
     ) -> None:
-        event_to_save = OutboxEntry(
-            aggregate_type="test_type",
-            aggregate_id=uuid4(),
-            event_type="test_type",
-            payload="test_payload",
+
+        returned_events = await transactional_seeded_outbox_repository.save(
+            address_analyzed_event
         )
 
-        returned_event = await transactional_seeded_outbox_repository.save(
-            event_to_save
+        assert all(
+            event.aggregate_type == "AddressAnalyzed" for event in returned_events
         )
-
-        assert all(event.payload == "test_payload" for event in returned_event)
 
     @pytest.mark.asyncio
     async def test_repository_mark_as_processed_with_success(
